@@ -1,7 +1,7 @@
 Player = class("Player", 
   {playerName = "New Player",
    location = {x = 100, y = 100},
-   speed = 5,})
+   speed = 4,})
 
 function Player:draw()
   love.graphics.circle('fill', self.location.x, self.location.y, 10, 32)

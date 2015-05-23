@@ -1,7 +1,15 @@
-Bullet = class("Bullet", {angle = 0, speed = 5,})
+Bullet = class("Bullet", {angle = 0, speed = 10, rate = 2})
 
 function Bullet:init()
   self.location = {}
+end
+
+function Bullet:init(posX, posY, mouseX, mouseY)
+  self.location = {}
+  self.location.x = posX
+  self.location.y = posY
+  self.angle = math.angle(posX, posY, mouseX, mouseY)
+  self:deltaValue()
 end
 
 function Bullet:draw()

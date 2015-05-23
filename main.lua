@@ -13,25 +13,35 @@ end
 function love.update(dt)
   player:update(dt)
   --edgePoint = updateEdgePoint()
-  for i,bullet in ipairs(bulletSet) do bullet:update(dt) end
+  local removedBullets = {}
+  for i,bullet in ipairs(bulletSet) do 
+    bullet:update(dt) 
+    if bullet.location.x < 0 or
+       bullet.location.y < 0 or
+       bullet.location.x > love.window.getWidth() or
+       bullet.location.y > love.window.getHeight() then
+         removedBullets[#removedBullets+1] = i
+      end
+  end
+  
+  if love.mouse.isDown('l') then
+    local x, y = love.mouse.getPosition();
+    local bullet = Bullet:new(player.location.x, player.location.y, x, y)
+    bulletSet[#bulletSet+1] = bullet
+  end
+  
+  for _,v in ipairs(removedBullets) do 
+    table.remove(bulletSet, v)
+  end
 end
 
 function love.draw()
+  love.graphics.print(love.timer.getFPS( ), 0, 0)
   player:draw()
   --drawAimLine()
-  for i,bullet in ipairs(bulletSet) do bullet:draw() end
-end
-
-function love.mousepressed(x, y, button)
-  local bullet = Bullet:new()
-  bulletSet[#bulletSet+1] = bullet
-  bullet.location.x = player.location.x
-  bullet.location.y = player.location.y
-  local dx = x - player.location.x
-  local dy = y - player.location.y
-  local angle = math.atan2(dy, dx)
-  bullet.angle = angle
-  bullet:deltaValue()
+  for i,bullet in ipairs(bulletSet) do 
+    bullet:draw()
+  end
 end
 
 function updateEdgePoint()
