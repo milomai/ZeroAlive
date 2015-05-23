@@ -1,7 +1,8 @@
+require('Weapon')
 Player = class("Player", 
   {playerName = "New Player",
    location = {x = 100, y = 100},
-   speed = 4,})
+   speed = 3,})
 
 function Player:draw()
   love.graphics.circle('fill', self.location.x, self.location.y, 10, 32)

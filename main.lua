@@ -3,9 +3,10 @@ require('Player')
 require('Bullet')
 local mouse = {x = 0, y = 0}
 local edgePoint = {x = 0, y = 0}
-local bulletSet = {}
+bulletSet = {}
 function love.load(arg)
   player = Player:new()
+  player.weapon = Weapon:new()
   love.graphics.setPointSize(2)
   if arg[#arg] == "-debug" then require("mobdebug").start() end
 end
@@ -14,24 +15,28 @@ function love.update(dt)
   player:update(dt)
   --edgePoint = updateEdgePoint()
   local removedBullets = {}
-  for i,bullet in ipairs(bulletSet) do 
-    bullet:update(dt) 
+  for i,bullet in ipairs(bulletSet) do  
     if bullet.location.x < 0 or
        bullet.location.y < 0 or
        bullet.location.x > love.window.getWidth() or
        bullet.location.y > love.window.getHeight() then
          removedBullets[#removedBullets+1] = i
-      end
+    end
+  end
+
+  for _,v in ipairs(removedBullets) do 
+    table.remove(bulletSet, v)
   end
   
   if love.mouse.isDown('l') then
-    local x, y = love.mouse.getPosition();
-    local bullet = Bullet:new(player.location.x, player.location.y, x, y)
-    bulletSet[#bulletSet+1] = bullet
+    player.weapon:fire()
+    player.weapon:update(dt)
+  else
+    player.weapon:stop()
   end
   
-  for _,v in ipairs(removedBullets) do 
-    table.remove(bulletSet, v)
+  for i,bullet in ipairs(bulletSet) do 
+    bullet:update(dt)
   end
 end
 
