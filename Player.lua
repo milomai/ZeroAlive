@@ -1,7 +1,8 @@
 require('Weapon')
 Player = class("Player", 
   {playerName = "New Player",
-   location = {x = 100, y = 100},
+   pos = {x = 100, y = 100},
+   size = 10,
    speed = 3,})
 
 function Player:init()
@@ -14,7 +15,8 @@ function Player:setSpeed(speed)
 end
 
 function Player:draw()
-  love.graphics.circle('fill', self.location.x, self.location.y, 10, 32)
+  love.graphics.setColor(0, 119, 0, 255)
+  love.graphics.circle('fill', self.pos.x, self.pos.y, self.size, 16)
 end
 
 function Player:update(dt)
@@ -34,6 +36,6 @@ function Player:update(dt)
   if downKeys == 'sa' then dy, dx = self.slash, -self.slash end
   if downKeys == 'sd' then dy, dx = self.slash, self.slash end
   
-  self.location.x = self.location.x + dx
-  self.location.y = self.location.y + dy
+  self.pos.x = self.pos.x + dx
+  self.pos.y = self.pos.y + dy
 end

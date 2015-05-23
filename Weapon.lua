@@ -1,4 +1,4 @@
-Weapon = class("Weapon", {rpm = 500, auto = true, accuracy = 5*math.pi/180})
+Weapon = class("Weapon", {rpm = 400, auto = true, accuracy = 4*math.pi/180})
 
 function Weapon:fire()
   if self.isFire then return end
@@ -14,7 +14,7 @@ function Weapon:update(dt)
   if self.auto then
     local x, y = love.mouse.getPosition();
     while self.fireTime < love.timer.getTime() and self.isFire do
-      local bullet = Bullet:new(player.location.x, player.location.y, x, y, self.accuracy)
+      local bullet = Bullet:new(player.pos.x, player.pos.y, x, y, self.accuracy)
       bulletSet[#bulletSet+1] = bullet
       fireSinceNow = love.timer.getTime() - self.fireTime
       bullet:updateLocation(fireSinceNow)
