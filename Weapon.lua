@@ -11,11 +11,11 @@ function Weapon:stop()
 end
 
 function Weapon:update(dt)
-  if self.auto then
-    local x, y = love.mouse.getPosition();
-    while self.fireTime < love.timer.getTime() and self.isFire do
+  if self.isFire and self.auto then
+    local x, y = world:mousePos()
+    while self.fireTime < love.timer.getTime() do
       local bullet = Bullet:new(player.pos.x, player.pos.y, x, y, self.accuracy)
-      bulletSet[#bulletSet+1] = bullet
+      world:add(bullet)
       fireSinceNow = love.timer.getTime() - self.fireTime
       bullet:updateLocation(fireSinceNow)
       self.fireTime = self.fireTime + 1/(self.rpm/60)

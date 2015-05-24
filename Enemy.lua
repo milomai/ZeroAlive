@@ -10,11 +10,11 @@ function Enemy:draw()
 end
 
 function Enemy.Generate(posX, posY, size)
-  if posX == nil then posX = love.window.getWidth() * love.math.random() end
-  if posY == nil then posY = love.window.getHeight() * love.math.random() end
+  if posX == nil then posX = world.size.width * love.math.random() end
+  if posY == nil then posY = world.size.height * love.math.random() end
   if size == nil then size = 20 end
   local enemy = Enemy:new()
   enemy.pos.x = posX
   enemy.pos.y = posY
-  enemySet[enemy] = true
+  world:add(enemy)
 end

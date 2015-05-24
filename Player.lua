@@ -1,7 +1,7 @@
 require('Weapon')
 Player = class("Player", 
   {playerName = "New Player",
-   pos = {x = 100, y = 100},
+   pos = {x = 1000, y = 1000},
    size = 10,
    speed = 3,})
 
@@ -20,6 +20,8 @@ function Player:draw()
 end
 
 function Player:update(dt)
+  if self.weapon then self.weapon:update(dt) end
+  
   local downKeys = ''
   if love.keyboard.isDown('s') then downKeys = downKeys..'s' end
   if love.keyboard.isDown('w') then downKeys = downKeys..'w' end

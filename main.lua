@@ -1,45 +1,31 @@
 class = require('30log')
+require('World')
 require('Player')
 require('Bullet')
 require('Enemy')
 local mouse = {x = 0, y = 0}
 local edgePoint = {x = 0, y = 0}
-bulletSet = {}
 enemySet = {}
+bulletSet = {}
 function love.load(arg)
   if arg[#arg] == "-debug" then require("mobdebug").start() end
+  
+  love.graphics.setPointSize(2)
+  
+  world = World:new(2000, 2000)
   player = Player:new()
   player.weapon = Weapon:new()
-  love.graphics.setPointSize(2)
+  world:add(player)
+  world.focus = player.pos
 end
 
 function love.update(dt)
   if love.math.random() > 0.99 then Enemy.Generate() end
-  player:update(dt)
+  world:update(dt)
+  
+  --[[
   --edgePoint = updateEdgePoint()
-  
-  --超出屏幕的子弹不需要绘制
-  local removedBullets = {}
-  for i,bullet in ipairs(bulletSet) do  
-    if bullet.pos.x < 0 or
-       bullet.pos.y < 0 or
-       bullet.pos.x > love.window.getWidth() or
-       bullet.pos.y > love.window.getHeight() then
-         removedBullets[#removedBullets+1] = i
-    end
-  end
 
-  for _,v in ipairs(removedBullets) do 
-    table.remove(bulletSet, v)
-  end
-  removedBullets = {}
-  
-  if love.mouse.isDown('l') then
-    player.weapon:fire()
-    player.weapon:update(dt)
-  else
-    player.weapon:stop()
-  end
   
   local killedEnemies = {}
   for i,bullet in ipairs(bulletSet) do 
@@ -60,18 +46,18 @@ function love.update(dt)
   for _,v in ipairs(removedBullets) do 
     table.remove(bulletSet, v)
   end
+  ]]--
 end
 
 function love.draw()
-  love.graphics.print(love.timer.getFPS( ), 0, 0)
-  player:draw()
+  world:draw()
+  --love.graphics.print(string.format("%.1f", player.pos.x)..','..string.format("%.1f", player.pos.y))
   --drawAimLine()
-  for i,bullet in ipairs(bulletSet) do 
-    bullet:draw()
-  end
+  --[[
   for enemy in pairs(enemySet) do
     enemy:draw()
   end
+  ]]--
 end
 
 function updateEdgePoint()
