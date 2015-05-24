@@ -10,6 +10,14 @@ function Weapon:stop()
   self.isFire = false
 end
 
+function Weapon:handleInput()
+  if love.mouse.isDown('l') then
+    player.weapon:fire()
+  else
+    player.weapon:stop()
+  end
+end
+
 function Weapon:update(dt)
   if self.isFire and self.auto then
     local x, y = world:mousePos()

@@ -1,5 +1,7 @@
 World = class("World")
 
+--local frameIndex = 0
+
 local _objects = {}
 function World:init(width, height)
   self.size = {}
@@ -15,10 +17,18 @@ end
 local function removeUnusedObjects()
   local indexes = {}
   for i, object in ipairs(_objects) do
-    if object.removed == true then indexes[#indexes+1] = i end
+    if object.removed == true then 
+      indexes[#indexes+1] = i 
+      --print('['..frameIndex..']('..i..')'..object.name..':'..object.pos.x..','..object.pos.y)
+    end
   end
-  for _, objectsIndex in ipairs(indexes) do
-    table.remove(_objects, objectsIndex)
+  for i = #indexes, 1, -1 do
+    local object = table.remove(_objects, indexes[i])
+    --[[
+    if object == nil then
+      print('['..frameIndex..']'..'out of range')
+    end
+    ]]--
   end
 end
 
@@ -33,22 +43,29 @@ function World:removeOutOfRangeObjects()
   end
 end
 
-local function inputProcess()
-  if love.mouse.isDown('l') then
-    player.weapon:fire()
-  else
-    player.weapon:stop()
-  end
-end
-
 function World:checkCircularCollision(ax, ay, bx, by, ar, br)
+  if ar == nil then ar = 0 end
+  if br == nil then br = 0 end
 	local dx = bx - ax
 	local dy = by - ay
 	return dx^2 + dy^2 < (ar + br)^2
 end
 
+function World:collide(object1, object2)
+  if (class.isInstance(object1, Bullet) and class.isInstance(object2, Enemy)) or
+  (class.isInstance(object1, Enemy) and class.isInstance(object2, Bullet)) then
+    object1.removed = true
+    object2.removed = true
+  end
+end
+
 function World:update(dt)
-  inputProcess()
+  --frameIndex = frameIndex + 1
+  for i, object in ipairs(_objects) do
+    if type(object.handleInput) == 'function' then
+      object:handleInput()
+    end
+  end
   
   for i, object in ipairs(_objects) do
     if type(object.update) == 'function' then
@@ -56,7 +73,19 @@ function World:update(dt)
     end
   end
   
-  
+  for i = 1, #_objects do
+    local object1 = _objects[i]
+    if object1.collidable then
+      for j = i+1, #_objects do
+        local object2 = _objects[j]
+        if object2.collidable then
+          if self:checkCircularCollision(object1.pos.x, object1.pos.y, object2.pos.x, object2.pos.y, object1.size, object2.size) then
+            self:collide(object1, object2)
+          end
+        end
+      end
+    end
+  end
   
   self:removeOutOfRangeObjects()
   removeUnusedObjects()

@@ -19,8 +19,10 @@ function Player:draw()
   love.graphics.circle('fill', self.pos.x, self.pos.y, self.size, 16)
 end
 
-function Player:update(dt)
-  if self.weapon then self.weapon:update(dt) end
+function Player:handleInput()
+  if self.weapon and type(self.weapon.handleInput) == 'function' then
+    self.weapon:handleInput()
+  end
   
   local downKeys = ''
   if love.keyboard.isDown('s') then downKeys = downKeys..'s' end
@@ -40,4 +42,8 @@ function Player:update(dt)
   
   self.pos.x = self.pos.x + dx
   self.pos.y = self.pos.y + dy
+end
+
+function Player:update(dt)
+  if self.weapon then self.weapon:update(dt) end
 end

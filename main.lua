@@ -5,8 +5,6 @@ require('Bullet')
 require('Enemy')
 local mouse = {x = 0, y = 0}
 local edgePoint = {x = 0, y = 0}
-enemySet = {}
-bulletSet = {}
 function love.load(arg)
   if arg[#arg] == "-debug" then require("mobdebug").start() end
   
@@ -19,8 +17,14 @@ function love.load(arg)
   world.focus = player.pos
 end
 
+local num = 0
+
 function love.update(dt)
-  if love.math.random() > 0.99 then Enemy.Generate() end
+  if love.math.random() > 0.96 then
+    --[[local x, y = 5+math.fmod(num, 10)*16, 5+math.modf(num/10)*16
+    num = num + 1]]--
+    Enemy.Generate() 
+  end
   world:update(dt)
   
   --[[

@@ -1,4 +1,4 @@
-Enemy = class("Enemy", {size = 8})
+Enemy = class("Enemy", {size = 8, collidable = true})
 
 function Enemy:init()
   self.pos = {}
