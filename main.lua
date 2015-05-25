@@ -20,7 +20,7 @@ end
 local num = 0
 
 function love.update(dt)
-  if love.math.random() > 0.96 then
+  if love.math.random() > 0.97 then
     --[[local x, y = 5+math.fmod(num, 10)*16, 5+math.modf(num/10)*16
     num = num + 1]]--
     Enemy.Generate() 
@@ -55,6 +55,7 @@ end
 
 function love.draw()
   world:draw()
+  love.graphics.print(love.timer.getFPS())
   --love.graphics.print(string.format("%.1f", player.pos.x)..','..string.format("%.1f", player.pos.y))
   --drawAimLine()
   --[[
