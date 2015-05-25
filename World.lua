@@ -63,7 +63,7 @@ function World:update(dt)
   --frameIndex = frameIndex + 1
   for i, object in ipairs(_objects) do
     if type(object.handleInput) == 'function' then
-      object:handleInput()
+      object:handleInput(dt)
     end
   end
   

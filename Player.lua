@@ -3,7 +3,7 @@ Player = class("Player",
   {playerName = "New Player",
    pos = {x = 1000, y = 1000},
    size = 10,
-   speed = 3,})
+   speed = 80,})
 
 function Player:init()
   self.slash = self.speed/2^0.5
@@ -19,7 +19,7 @@ function Player:draw()
   love.graphics.circle('fill', self.pos.x, self.pos.y, self.size, 16)
 end
 
-function Player:handleInput()
+function Player:handleInput(dt)
   if self.weapon and type(self.weapon.handleInput) == 'function' then
     self.weapon:handleInput()
   end
@@ -40,8 +40,8 @@ function Player:handleInput()
   if downKeys == 'sa' then dy, dx = self.slash, -self.slash end
   if downKeys == 'sd' then dy, dx = self.slash, self.slash end
   
-  self.pos.x = self.pos.x + dx
-  self.pos.y = self.pos.y + dy
+  self.pos.x = self.pos.x + dx * dt
+  self.pos.y = self.pos.y + dy * dt
 end
 
 function Player:update(dt)
