@@ -25,7 +25,18 @@ function love.update(dt)
     num = num + 1]]--
     Enemy.Generate() 
   end
-  world:update(dt)
+  
+  --锁定游戏更新时间
+  local remains = dt
+  local ddt = 1/120
+  while remains > 0 do
+    if remains < ddt then 
+      ddt = remains 
+    end
+    world:update(ddt)
+    remains = remains - ddt
+  end
+  
   
   --[[
   --edgePoint = updateEdgePoint()

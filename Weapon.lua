@@ -1,4 +1,4 @@
-Weapon = class("Weapon", {rpm = 400, auto = true, accuracy = 4*math.pi/180})
+Weapon = class("Weapon", {rpm = 600, auto = true, accuracy = 4*math.pi/180})
 
 function Weapon:fire()
   if self.isFire then return end
