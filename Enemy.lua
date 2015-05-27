@@ -1,12 +1,16 @@
-Enemy = class("Enemy", {size = 8, collidable = true, speed = 40})
+Enemy = class("Enemy", {size = 8, collidable = true, speed = 40, alive = true})
 
 function Enemy:init()
   self.pos = {}
 end
 
 function Enemy:draw()
-  love.graphics.setColor(255, 0, 0, 255)
-  love.graphics.circle('fill', self.pos.x, self.pos.y, self.size, 16)
+  if self.alive then
+    love.graphics.setColor(200, 0, 0, 255)
+    love.graphics.circle('fill', self.pos.x, self.pos.y, self.size, 16)
+  elseif self.diePS then
+    love.graphics.draw(self.diePS, self.pos.x, self.pos.y)
+  end
 end
 
 --向指定坐标移动
@@ -19,7 +23,26 @@ function Enemy:moveTo(x, y, dt)
 end
 
 function Enemy:update(dt)
-  self:moveTo(self.target.x, self.target.y, dt)
+  if self.alive then
+    self:moveTo(self.target.x, self.target.y, dt)
+  elseif self.diePS then
+    self.diePS:update(dt)
+    if self.removeRemainTime <= 0 then
+      self.removed = true
+    end
+    self.removeRemainTime = self.removeRemainTime - dt
+  end
+end
+
+function Enemy:die()
+  if not self.alive then return end
+  self.alive = false
+  self.collidable = false
+  if not self.diePS then
+    local image = love.graphics.newImage('circle.png')
+    self.diePS = getPS('Blood', image)
+    self.removeRemainTime = self.diePS:getEmitterLifetime()+math.max(self.diePS:getParticleLifetime())
+  end
 end
 
 function Enemy.Generate(posX, posY, size)

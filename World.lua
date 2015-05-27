@@ -87,10 +87,22 @@ function World:checkCircleRectCollision(circleX, circleY, circleRadius, rectX, r
 end
 
 function World:collide(object1, object2)
-  if (class.isInstance(object1, Bullet) and class.isInstance(object2, Enemy)) or
-  (class.isInstance(object1, Enemy) and class.isInstance(object2, Bullet)) then
-    object1.removed = true
-    object2.removed = true
+  local bullet, enemy
+  if class.isInstance(object1, Bullet) then
+    bullet = object1
+  end
+  if class.isInstance(object2, Bullet) then
+    bullet = object2
+  end
+  if class.isInstance(object1, Enemy) then
+    enemy = object1
+  end
+  if class.isInstance(object2, Enemy) then
+    enemy = object2
+  end
+  if bullet and enemy and enemy.alive then
+    bullet.removed = true
+    enemy:die()
   end
 end
 
