@@ -38,7 +38,11 @@ function World:removeOutOfRangeObjects()
        object.pos.y < 0 or
        object.pos.x > self.size.width or
        object.pos.y > self.size.height then
-        object.removed = true
+          if object == player then 
+            player:die()
+          else
+            object.removed = true
+          end
     end
   end
 end
@@ -86,23 +90,28 @@ function World:checkCircleRectCollision(circleX, circleY, circleRadius, rectX, r
   return false
 end
 
+local function instanceOfClass(aClass, object1, object2)
+  if class.isInstance(object1, aClass) then
+    return object1
+  end
+  if class.isInstance(object2, aClass) then
+    return object2
+  end
+end
+
 function World:collide(object1, object2)
-  local bullet, enemy
-  if class.isInstance(object1, Bullet) then
-    bullet = object1
-  end
-  if class.isInstance(object2, Bullet) then
-    bullet = object2
-  end
-  if class.isInstance(object1, Enemy) then
-    enemy = object1
-  end
-  if class.isInstance(object2, Enemy) then
-    enemy = object2
-  end
+  local bullet, enemy, player
+  bullet = instanceOfClass(Bullet, object1, object2)
+  enemy = instanceOfClass(Enemy, object1, object2)
+  player = instanceOfClass(Player, object1, object2)
+  
   if bullet and enemy and enemy.alive then
     bullet.removed = true
     enemy:die()
+  end
+  
+  if enemy and player and enemy.alive and player.alive then
+    player:die()
   end
 end
 

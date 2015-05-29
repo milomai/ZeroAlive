@@ -3,7 +3,9 @@ Player = class("Player",
   {playerName = "New Player",
    pos = {x = 1000, y = 1000},
    size = 10,
-   speed = 80,})
+   speed = 80,
+   alive = true,
+   collidable = true,})
 
 function Player:init()
   self.slash = self.speed/2^0.5
@@ -49,4 +51,10 @@ end
 
 function Player:update(dt)
   if self.weapon then self.weapon:update(dt) end
+end
+
+function Player:die()
+  self.alive = false
+  self.removed = true
+  self.collidable = false
 end
