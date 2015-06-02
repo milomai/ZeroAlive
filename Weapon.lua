@@ -1,8 +1,8 @@
 Weapon = class("Weapon", {rpm = 600, auto = true, accuracy = 4*math.pi/180})
 
 function Weapon:init()
-  local image = love.graphics.newImage('circle.png')
-  self.ps = getPS('Fire', image)
+  local image = love.graphics.newImage('res/img/circle.png')
+  self.ps = getPS('res/particle/Fire', image)
 end
 
 function Weapon:fire()

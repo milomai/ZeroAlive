@@ -3,6 +3,7 @@ require('World')
 require('Player')
 require('Bullet')
 require('Enemy')
+require('Map')
 
 local mouse = {x = 0, y = 0}
 local edgePoint = {x = 0, y = 0}
@@ -12,7 +13,9 @@ function love.load(arg)
   
   love.graphics.setPointSize(2)
   
-  world = World:new(2000, 2000)
+  local map = Map:new('res/map/stage1')
+  world = World:new(map:size())
+  world:add(map)
   player = Player:new()
   player.weapon = Weapon:new()
   world:add(player)
@@ -26,11 +29,13 @@ local remainTime = 0
 
 function love.update(dt)
   if player.alive then
+    --[[
     remainTime = remainTime - dt
     if remainTime <= 0 then
       Enemy.Generate()
       remainTime = remainTime + EnemyGenerateRate
     end
+    
     
     --锁定游戏更新时间
     local remains = dt
@@ -42,6 +47,8 @@ function love.update(dt)
       world:update(ddt)
       remains = remains - ddt
     end
+    ]]--
+    world:update(dt)
   end
   
   --[[

@@ -14,6 +14,13 @@ function World:add(object)
   _objects[#_objects+1] = object
 end
 
+function World:vision()
+  local rect = {}
+  rect.x, rect.y = self:worldCoordinates(0, 0)
+  rect.width, rect.height = love.window.getWidth(), love.window.getHeight()
+  return rect
+end
+
 local function removeUnusedObjects()
   local indexes = {}
   for i, object in ipairs(_objects) do
@@ -34,15 +41,17 @@ end
 
 function World:removeOutOfRangeObjects()
   for i,object in ipairs(_objects) do  
-    if object.pos.x < 0 or
-       object.pos.y < 0 or
-       object.pos.x > self.size.width or
-       object.pos.y > self.size.height then
-          if object == player then 
-            player:die()
-          else
-            object.removed = true
-          end
+    if not object.solid then
+      if object.pos.x < 0 or
+         object.pos.y < 0 or
+         object.pos.x > self.size.width or
+         object.pos.y > self.size.height then
+            if object == player then 
+              player:die()
+            else
+              object.removed = true
+            end
+      end
     end
   end
 end
@@ -152,12 +161,11 @@ function World:draw()
   love.graphics.translate(-self.focus.x+love.window.getWidth()/2, -self.focus.y+love.window.getHeight()/2)
   love.graphics.rectangle('line', 0, 0, self.size.width, self.size.height)
   
-  local window = {}
-  window.x, window.y = self:worldCoordinates(0, 0)
-  window.width, window.height = love.window.getWidth(), love.window.getHeight()
+  local window = self:vision()
   --love.graphics.line(0, window.y+window.height, self.size.width, window.y+window.height)
   for i, object in ipairs(_objects) do
-    if self:checkCircleRectCollision(object.pos.x, object.pos.y, object.size, window.x, window.y, window.width, window.height) then
+    
+    if object.forceDraw or self:checkCircleRectCollision(object.pos.x, object.pos.y, object.size, window.x, window.y, window.width, window.height) then
       object:draw()
     end
   end

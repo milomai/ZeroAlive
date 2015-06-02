@@ -5,7 +5,8 @@ Player = class("Player",
    size = 10,
    speed = 80,
    alive = true,
-   collidable = true,})
+   collidable = true,
+   forceDraw = true,})
 
 function Player:init()
   self.slash = self.speed/2^0.5

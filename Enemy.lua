@@ -39,8 +39,8 @@ function Enemy:die()
   self.alive = false
   self.collidable = false
   if not self.diePS then
-    local image = love.graphics.newImage('circle.png')
-    self.diePS = getPS('Blood', image)
+    local image = love.graphics.newImage('res/img/circle.png')
+    self.diePS = getPS('res/particle/Blood', image)
     self.removeRemainTime = self.diePS:getEmitterLifetime()+math.max(self.diePS:getParticleLifetime())
   end
 end
