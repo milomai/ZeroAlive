@@ -29,14 +29,14 @@ local remainTime = 0
 
 function love.update(dt)
   if player.alive then
-    --[[
+    
     remainTime = remainTime - dt
     if remainTime <= 0 then
       Enemy.Generate()
       remainTime = remainTime + EnemyGenerateRate
     end
     
-    
+    --[[
     --锁定游戏更新时间
     local remains = dt
     local ddt = 1/120

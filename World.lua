@@ -64,18 +64,24 @@ function World:checkCircularCollision(ax, ay, bx, by, ar, br)
 	return dx^2 + dy^2 < (ar + br)^2
 end
 
+function World:CheckRectCollision(x1,y1,w1,h1, x2,y2,w2,h2)
+  return x1 < x2+w2 and
+         x2 < x1+w1 and
+         y1 < y2+h2 and
+         y2 < y1+h1
+end
+
 function World:checkRectPointCollision(rectX, rectY, rectWidth, rectHeight, pointX, pointY)
-  return pointX >= rectX and pointX <= rectX+rectWidth and pointY >= rectY and pointY <= rectY+rectHeight
+  return self:CheckRectCollision(rectX, rectY, rectWidth, rectHeight, pointX, pointY, 0, 0)
 end
 
 function World:checkCircleRectCollision(circleX, circleY, circleRadius, rectX, rectY, rectWidth, rectHeight)
   if not circleRadius then circleRadius = 0 end
   
-  local result = self:checkRectPointCollision(rectX-circleRadius, rectY, rectWidth+circleRadius*2, rectHeight, circleX, circleY)
-  if result then return result end
-  result = self:checkRectPointCollision(rectX, rectY-circleRadius, rectWidth, rectHeight+circleRadius*2, circleX, circleY)
-  if result then return result end
-  
+  local result = self:checkRectPointCollision(rectX-circleRadius, rectY-circleRadius, rectWidth+circleRadius*2, rectHeight+circleRadius*2, circleX, circleY)
+  return result
+
+--[[  
   --左上
   if self:checkRectPointCollision(rectX-circleRadius, rectY-circleRadius, circleRadius, circleRadius, circleX, circleY) then
     return World:checkCircularCollision(circleX, circleY, rectX, rectY, circleRadius)
@@ -97,6 +103,7 @@ function World:checkCircleRectCollision(circleX, circleY, circleRadius, rectX, r
   end
   
   return false
+  --]]
 end
 
 local function instanceOfClass(aClass, object1, object2)
@@ -163,8 +170,8 @@ function World:draw()
   
   local window = self:vision()
   --love.graphics.line(0, window.y+window.height, self.size.width, window.y+window.height)
+  
   for i, object in ipairs(_objects) do
-    
     if object.forceDraw or self:checkCircleRectCollision(object.pos.x, object.pos.y, object.size, window.x, window.y, window.width, window.height) then
       object:draw()
     end
