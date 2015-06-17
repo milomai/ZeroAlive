@@ -149,7 +149,20 @@ function World:collide(object1, object2)
   
 end
 
+local EnemyGenerateRate = 1
+local remainTime = 0
+
 function World:update(dt)
+  if self.pause then
+    return
+  end
+  
+  remainTime = remainTime - dt
+    if remainTime <= 0 then
+      Enemy.Generate()
+      remainTime = remainTime + EnemyGenerateRate
+    end
+  
   self.physics:update(dt)
   --frameIndex = frameIndex + 1
   for i, object in ipairs(_objects) do

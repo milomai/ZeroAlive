@@ -25,18 +25,8 @@ end
 
 local num = 0
 
-local EnemyGenerateRate = 1
-local remainTime = 0
-
 function love.update(dt)
   if player.alive then
-    
-    
-    remainTime = remainTime - dt
-    if remainTime <= 0 then
-      Enemy.Generate()
-      remainTime = remainTime + EnemyGenerateRate
-    end
     --[[
     --锁定游戏更新时间
     local remains = dt
@@ -65,6 +55,17 @@ function love.draw()
   if not player.alive then
     love.graphics.setColor(255, 255, 0, 255)
     love.graphics.print('Game Over', love.window.getWidth()/2, love.window.getHeight()/2, 0, 2, 2, 37, 7)
+  end
+  
+  if world.pause then
+    love.graphics.setColor(255, 255, 255, 255)
+    love.graphics.print('Pause', love.window.getWidth()/2, love.window.getHeight()/2, 0, 2, 2, 37, 7)
+  end
+end
+
+function love.keypressed(key, isRepeat)
+  if key == 'escape' then
+    world.pause = not world.pause
   end
 end
 
