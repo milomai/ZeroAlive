@@ -15,7 +15,8 @@ function love.load(arg)
   
   local map = Map:new('res/map/stage1')
   world = World:new(map:size())
-  world:add(map)
+  map:loadTiles()
+  --world:add(map)
   player = Player:new()
   player.weapon = Weapon:new()
   world:add(player)
@@ -30,13 +31,13 @@ local remainTime = 0
 function love.update(dt)
   if player.alive then
     
+    --[[
     remainTime = remainTime - dt
     if remainTime <= 0 then
       Enemy.Generate()
       remainTime = remainTime + EnemyGenerateRate
     end
     
-    --[[
     --锁定游戏更新时间
     local remains = dt
     local ddt = 1/120

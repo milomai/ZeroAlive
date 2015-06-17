@@ -1,6 +1,23 @@
+box2DDebugDraw = require('debugWorldDraw')
 World = class("World")
 
 --local frameIndex = 0
+
+local function instanceOfClass(aClass, object1, object2)
+  if class.isInstance(object1, aClass) then
+    return object1
+  end
+  if class.isInstance(object2, aClass) then
+    return object2
+  end
+end
+
+local function beginContact(a, b, coll)
+  local bullet, player
+  bullet = instanceOfClass(Bullet, a:getUserData(), b:getUserData())
+  player = instanceOfClass(Player, a:getUserData(), b:getUserData())
+  if bullet and not player then bullet.removed = true end
+end
 
 local _objects = {}
 function World:init(width, height)
@@ -8,9 +25,15 @@ function World:init(width, height)
   self.size.width = width
   self.size.height = height
   self.focus = {x = self.size.width/2, y = self.size.height/2}
+  love.physics.setMeter(32)
+  self.physics = love.physics.newWorld(0, 0, true)
+  self.physics:setCallbacks(beginContact)
 end
 
 function World:add(object)
+  if object.body then
+    object.body:setActive(true)
+  end
   _objects[#_objects+1] = object
 end
 
@@ -31,6 +54,7 @@ local function removeUnusedObjects()
   end
   for i = #indexes, 1, -1 do
     local object = table.remove(_objects, indexes[i])
+    if object.body then object.body:destroy() end
     --[[
     if object == nil then
       print('['..frameIndex..']'..'out of range')
@@ -106,15 +130,6 @@ function World:checkCircleRectCollision(circleX, circleY, circleRadius, rectX, r
   --]]
 end
 
-local function instanceOfClass(aClass, object1, object2)
-  if class.isInstance(object1, aClass) then
-    return object1
-  end
-  if class.isInstance(object2, aClass) then
-    return object2
-  end
-end
-
 function World:collide(object1, object2)
   local bullet, enemy, player
   bullet = instanceOfClass(Bullet, object1, object2)
@@ -132,6 +147,7 @@ function World:collide(object1, object2)
 end
 
 function World:update(dt)
+  self.physics:update(dt)
   --frameIndex = frameIndex + 1
   for i, object in ipairs(_objects) do
     if type(object.handleInput) == 'function' then
@@ -170,6 +186,7 @@ function World:draw()
   
   local window = self:vision()
   --love.graphics.line(0, window.y+window.height, self.size.width, window.y+window.height)
+  box2DDebugDraw(self.physics, window.x, window.y, window.width, window.height)
   
   for i, object in ipairs(_objects) do
     if object.forceDraw or self:checkCircleRectCollision(object.pos.x, object.pos.y, object.size, window.x, window.y, window.width, window.height) then
