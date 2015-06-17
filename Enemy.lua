@@ -1,7 +1,13 @@
-Enemy = class("Enemy", {size = 8, collidable = true, speed = 40, alive = true})
+Enemy = class("Enemy", {size = 8, collidable = true, speed = 1200, alive = true, linearDamping = 1})
 
-function Enemy:init()
+function Enemy:init(posX, posY)
   self.pos = {}
+  self.shape = love.physics.newCircleShape(self.size)
+  self.body = love.physics.newBody(world.physics, posX, posY, "dynamic")
+  self.body:setLinearDamping(self.linearDamping)
+  self.fixture = love.physics.newFixture(self.body, self.shape)
+  self.body:setActive(false)
+  self.fixture:setUserData(self)
 end
 
 function Enemy:draw()
@@ -18,11 +24,12 @@ function Enemy:moveTo(x, y, dt)
   local angle = math.angle(self.pos.x, self.pos.y, x, y)
   local dx = self.speed * math.cos(angle) * dt
   local dy = self.speed * math.sin(angle) * dt
-  self.pos.x = self.pos.x + dx
-  self.pos.y = self.pos.y + dy
+  self.body:applyForce(dx, dy)
 end
 
 function Enemy:update(dt)
+  self.pos.x = self.body:getX()
+  self.pos.y = self.body:getY()
   if self.alive then
     self:moveTo(self.target.x, self.target.y, dt)
   elseif self.diePS then
@@ -49,9 +56,7 @@ function Enemy.Generate(posX, posY, size)
   if posX == nil then posX = world.size.width * love.math.random() end
   if posY == nil then posY = world.size.height * love.math.random() end
   if size == nil then size = 20 end
-  local enemy = Enemy:new()
-  enemy.pos.x = posX
-  enemy.pos.y = posY
+  local enemy = Enemy:new(posX, posY)
   enemy.target = player.pos
   world:add(enemy)
 end

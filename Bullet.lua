@@ -1,4 +1,4 @@
-Bullet = class("Bullet", {angle = 0, speed = 400, collidable = true})
+Bullet = class("Bullet", {angle = 0, speed = 600, collidable = true})
 
 function Bullet:init()
   self.pos = {}
@@ -23,8 +23,8 @@ end
 function Bullet:deltaValue()
   self.dx = self.speed * math.cos(self.angle)
   self.dy = self.speed * math.sin(self.angle)
-  self.pos.x = self.pos.x + player.size * math.cos(self.angle)
-  self.pos.y = self.pos.y + player.size * math.sin(self.angle)
+  self.pos.x = self.pos.x + (player.size+1) * math.cos(self.angle)
+  self.pos.y = self.pos.y + (player.size+1) * math.sin(self.angle)
 end
 
 function Bullet:updateLocation(dt)

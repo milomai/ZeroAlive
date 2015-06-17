@@ -13,10 +13,20 @@ local function instanceOfClass(aClass, object1, object2)
 end
 
 local function beginContact(a, b, coll)
-  local bullet, player
+  local bullet, player, enemy
   bullet = instanceOfClass(Bullet, a:getUserData(), b:getUserData())
   player = instanceOfClass(Player, a:getUserData(), b:getUserData())
+  enemy = instanceOfClass(Enemy, a:getUserData(), b:getUserData())
   if bullet and not player then bullet.removed = true end
+  
+  if bullet and enemy and enemy.alive then
+    bullet.removed = true
+    enemy:die()
+  end
+  
+  if enemy and player and enemy.alive and player.alive then
+    player:die()
+  end
 end
 
 local _objects = {}
@@ -136,14 +146,7 @@ function World:collide(object1, object2)
   enemy = instanceOfClass(Enemy, object1, object2)
   player = instanceOfClass(Player, object1, object2)
   
-  if bullet and enemy and enemy.alive then
-    bullet.removed = true
-    enemy:die()
-  end
   
-  if enemy and player and enemy.alive and player.alive then
-    player:die()
-  end
 end
 
 function World:update(dt)
