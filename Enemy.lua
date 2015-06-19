@@ -1,4 +1,4 @@
-Enemy = class("Enemy", {size = 8, collidable = true, speed = 1200, alive = true, linearDamping = 1})
+Enemy = class("Enemy", {size = 8, collidable = true, speed = 36, alive = true, linearDamping = 1})
 
 function Enemy:init(posX, posY)
   self.pos = {}
@@ -26,7 +26,7 @@ function Enemy:moveTo(x, y, dt)
   local angle = math.angle(self.pos.x, self.pos.y, x, y)
   local dx = self.speed * math.cos(angle) * dt
   local dy = self.speed * math.sin(angle) * dt
-  self.body:applyForce(dx, dy)
+  self.body:applyLinearImpulse(dx, dy)
 end
 
 function Enemy:update(dt)

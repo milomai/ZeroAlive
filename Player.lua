@@ -3,7 +3,7 @@ Player = class("Player",
   {playerName = "New Player",
    pos = {x = 50, y = 50},
    size = 10,
-   speed = 640,
+   speed = 12,
    alive = true,
    collidable = true,
    forceDraw = true,
@@ -44,14 +44,14 @@ function Player:handleInput(dt)
   if love.keyboard.isDown('d') then downKeys = downKeys..'d' end
   
   --local dx, dy = 0, 0
-  if downKeys == 's'  then self.body:applyForce(0, self.speed) end
-  if downKeys == 'w'  then self.body:applyForce(0, -self.speed) end
-  if downKeys == 'a'  then self.body:applyForce(-self.speed, 0) end
-  if downKeys == 'd'  then self.body:applyForce(self.speed, 0) end
-  if downKeys == 'wa' then self.body:applyForce(-self.slash, -self.slash) end
-  if downKeys == 'wd' then self.body:applyForce(self.slash, -self.slash) end
-  if downKeys == 'sa' then self.body:applyForce(-self.slash, self.slash) end
-  if downKeys == 'sd' then self.body:applyForce(self.slash, self.slash) end
+  if downKeys == 's'  then self.body:applyLinearImpulse(0, self.speed) end
+  if downKeys == 'w'  then self.body:applyLinearImpulse(0, -self.speed) end
+  if downKeys == 'a'  then self.body:applyLinearImpulse(-self.speed, 0) end
+  if downKeys == 'd'  then self.body:applyLinearImpulse(self.speed, 0) end
+  if downKeys == 'wa' then self.body:applyLinearImpulse(-self.slash, -self.slash) end
+  if downKeys == 'wd' then self.body:applyLinearImpulse(self.slash, -self.slash) end
+  if downKeys == 'sa' then self.body:applyLinearImpulse(-self.slash, self.slash) end
+  if downKeys == 'sd' then self.body:applyLinearImpulse(self.slash, self.slash) end
   
   --self.pos.x = self.pos.x + dx * dt
   --self.pos.y = self.pos.y + dy * dt

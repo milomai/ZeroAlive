@@ -27,18 +27,6 @@ local num = 0
 
 function love.update(dt)
   if player.alive then
-    --[[
-    --锁定游戏更新时间
-    local remains = dt
-    local ddt = 1/120
-    while remains > 0 do
-      if remains < ddt then 
-        ddt = remains 
-      end
-      world:update(ddt)
-      remains = remains - ddt
-    end
-    ]]--
     world:update(dt)
   end
   
@@ -51,18 +39,21 @@ function love.draw()
   love.graphics.push('all')
   world:draw()
   love.graphics.pop()
+  
+  love.graphics.push('all')
   love.graphics.print(love.timer.getFPS())
   --love.graphics.print(string.format("%.1f", player.pos.x)..','..string.format("%.1f", player.pos.y))
   --drawAimLine()
   if not player.alive then
     love.graphics.setColor(255, 255, 0, 255)
     love.graphics.print('Game Over', love.window.getWidth()/2, love.window.getHeight()/2, 0, 2, 2, 37, 7)
+  else 
+    if world.pause then
+      love.graphics.setColor(255, 255, 255, 255)
+      love.graphics.print('Pause', love.window.getWidth()/2, love.window.getHeight()/2, 0, 2, 2, 37, 7)
+    end
   end
-  
-  if world.pause then
-    love.graphics.setColor(255, 255, 255, 255)
-    love.graphics.print('Pause', love.window.getWidth()/2, love.window.getHeight()/2, 0, 2, 2, 37, 7)
-  end
+  love.graphics.pop()
 end
 
 function love.keypressed(key, isRepeat)
