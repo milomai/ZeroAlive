@@ -1,9 +1,20 @@
 Map = class("Map", {forceDraw = true, solid = true})
 
-local tileMap
-
 function Map:init(file)
   self.tileMap = require(file)
+  self:loadImages(self.tileMap.tilesets)
+end
+
+function Map:loadImages(tilesets)
+  local set = tilesets[1]
+  local image = love.graphics.newImage(set.image)
+  self.spriteBatch = love.graphics.newSpriteBatch(image, self.tileMap.width*self.tileMap.height)
+  self.tiles = {}
+  for i = 1, set.tilecount do
+    local tile = set.tiles[i]
+    table.insert(self.tiles, set.firstgid + tile.id, tile.properties)
+    tile.properties.quad = love.graphics.newQuad((i-1)*set.tilewidth, 0, set.tilewidth, set.tileheight, image:getDimensions())
+  end
 end
 
 function Map:size()
@@ -12,13 +23,17 @@ end
 
 function Map:loadTiles()
   for _, layer in ipairs(self.tileMap.layers) do
-    for index, tile in ipairs(layer.data) do
-      if not (tile == 0) then
-        local x = (math.fmod(index, self.tileMap.width)-1)*self.tileMap.tilewidth
-        local y = math.modf(index/self.tileMap.width)*self.tileMap.tileheight
-        local body = love.physics.newBody(world.physics, x+self.tileMap.tilewidth/2, y+self.tileMap.tileheight/2)
-        local shape = love.physics.newRectangleShape(self.tileMap.tilewidth, self.tileMap.tileheight)
-        love.physics.newFixture(body, shape)
+    for index, tileID in ipairs(layer.data) do
+      if not (tileID == 0) then
+        local tile = self.tiles[tileID]
+        local x = (math.fmod(index-1, self.tileMap.width))*self.tileMap.tilewidth
+        local y = math.modf(index/self.tileMap.height)*self.tileMap.tileheight
+        self.spriteBatch:add(tile.quad, x, y)
+        if tile.solid then
+          local body = love.physics.newBody(world.physics, x+self.tileMap.tilewidth/2, y+self.tileMap.tileheight/2)
+          local shape = love.physics.newRectangleShape(self.tileMap.tilewidth, self.tileMap.tileheight)
+          love.physics.newFixture(body, shape)
+        end
       end
     end
   end
@@ -31,6 +46,10 @@ end
 
 function Map:draw()
   love.graphics.push()
+  if self.spriteBatch then
+    love.graphics.draw(self.spriteBatch)
+  end
+  --[[
   love.graphics.setColor(0, 255, 255, 255)
   for _, layer in ipairs(self.tileMap.layers) do
     for index, tile in ipairs(layer.data) do
@@ -40,13 +59,14 @@ function Map:draw()
         love.graphics.rectangle('fill', x, y, self.tileMap.tilewidth, self.tileMap.tileheight)
       end
     end
-    --[[
+    
     local vision = world:vision()
     local startX, startY, endX, endY
     startX, startY = vision.x, vision.y
     endX, endY = vision.x+vision.width, vision.y+vision.height
-    ]]--
+    
   end
+  ]]--
   love.graphics.pop()
 end
 

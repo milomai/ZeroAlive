@@ -15,8 +15,8 @@ function love.load(arg)
   
   local map = Map:new('res/map/stage1')
   world = World:new(map:size())
+  world.map = map
   map:loadTiles()
-  --world:add(map)
   player = Player:new()
   player.weapon = Weapon:new()
   world:add(player)
@@ -48,7 +48,9 @@ function love.update(dt)
 end
 
 function love.draw()
+  love.graphics.push('all')
   world:draw()
+  love.graphics.pop()
   love.graphics.print(love.timer.getFPS())
   --love.graphics.print(string.format("%.1f", player.pos.x)..','..string.format("%.1f", player.pos.y))
   --drawAimLine()

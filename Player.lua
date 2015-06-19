@@ -25,8 +25,8 @@ function Player:setSpeed(speed)
 end
 
 function Player:draw()
-  --love.graphics.setColor(0, 119, 0, 255)
-  --love.graphics.circle('fill', self.pos.x, self.pos.y, self.size, 16)
+  love.graphics.setColor(0, 119, 0, 255)
+  love.graphics.circle('fill', self.pos.x, self.pos.y, self.size, 16)
   if self.weapon then
     self.weapon:draw()
   end

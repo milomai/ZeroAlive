@@ -33,7 +33,8 @@ function Bullet:updateLocation(dt)
 end
 
 function Bullet:draw()
-  love.graphics.setColor(255, 255, 255, 255)
+  love.graphics.setPointSize(4)
+  love.graphics.setColor(255, 255, 100, 255)
   love.graphics.point(self.pos.x, self.pos.y)
 end
 

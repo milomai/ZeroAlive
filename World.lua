@@ -177,20 +177,6 @@ function World:update(dt)
     end
   end
   
-  for i = 1, #_objects do
-    local object1 = _objects[i]
-    if not object1.removed and object1.collidable then
-      for j = i+1, #_objects do
-        local object2 = _objects[j]
-        if not object2.removed and object2.collidable then
-          if self:checkCircularCollision(object1.pos.x, object1.pos.y, object2.pos.x, object2.pos.y, object1.size, object2.size) then
-            self:collide(object1, object2)
-          end
-        end
-      end
-    end
-  end
-  
   self:removeOutOfRangeObjects()
   removeUnusedObjects()
 end
@@ -200,13 +186,19 @@ function World:draw()
   love.graphics.translate(-self.focus.x+love.window.getWidth()/2, -self.focus.y+love.window.getHeight()/2)
   love.graphics.rectangle('line', 0, 0, self.size.width, self.size.height)
   
+  self.map:draw()
+  
   local window = self:vision()
   --love.graphics.line(0, window.y+window.height, self.size.width, window.y+window.height)
-  box2DDebugDraw(self.physics, window.x, window.y, window.width, window.height)
+  love.graphics.push('all')
+  --box2DDebugDraw(self.physics, window.x, window.y, window.width, window.height)
+  love.graphics.pop()
   
   for i, object in ipairs(_objects) do
     if object.forceDraw or self:checkCircleRectCollision(object.pos.x, object.pos.y, object.size, window.x, window.y, window.width, window.height) then
+      love.graphics.push('all')
       object:draw()
+      love.graphics.pop()
     end
   end
   love.graphics.pop()

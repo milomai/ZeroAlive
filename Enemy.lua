@@ -11,12 +11,14 @@ function Enemy:init(posX, posY)
 end
 
 function Enemy:draw()
+  love.graphics.push()
   if self.alive then
     love.graphics.setColor(200, 0, 0, 255)
     love.graphics.circle('fill', self.pos.x, self.pos.y, self.size, 16)
   elseif self.diePS then
     love.graphics.draw(self.diePS, self.pos.x, self.pos.y)
   end
+  love.graphics.pop()
 end
 
 --向指定坐标移动
