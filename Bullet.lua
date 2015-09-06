@@ -1,4 +1,4 @@
-Bullet = class("Bullet", {angle = 0, speed = 600, collidable = true})
+Bullet = class("Bullet", {angle = 0, speed = 800, collidable = true})
 
 function Bullet:init()
   self.pos = {}
