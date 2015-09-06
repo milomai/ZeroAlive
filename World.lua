@@ -38,6 +38,7 @@ function World:init(width, height)
   love.physics.setMeter(32)
   self.physics = love.physics.newWorld(0, 0, true)
   self.physics:setCallbacks(beginContact)
+  self.generateEnemy = true
 end
 
 function World:add(object)
@@ -157,11 +158,13 @@ function World:update(dt)
     return
   end
   
-  remainTime = remainTime - dt
+  if self.generateEnemy then
+    remainTime = remainTime - dt
     if remainTime <= 0 then
       Enemy.Generate()
       remainTime = remainTime + EnemyGenerateRate
     end
+  end
   
   self.physics:update(dt)
   --frameIndex = frameIndex + 1
