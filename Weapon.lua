@@ -1,4 +1,8 @@
-Weapon = class("Weapon", {rpm = 600, auto = true, accuracy = 4*math.pi/180})
+Weapon = class("Weapon", {
+    rpm = 600, 
+    auto = true, 
+    accuracy = 4*math.pi/180,
+    ammo = 5})
 
 function Weapon:init()
   local image = love.graphics.newImage('res/img/circle.png')
@@ -29,12 +33,16 @@ function Weapon:update(dt)
       self.ps:update(dt) 
     end
     local x, y = world:mousePos()
-    while self.fireTime < love.timer.getTime() do
+    while self.fireTime < love.timer.getTime() and self.ammo > 0 do
       local bullet = Bullet:new(player.pos.x, player.pos.y, x, y, self.accuracy)
       world:add(bullet)
+      self.ammo = self.ammo - 1
       fireSinceNow = love.timer.getTime() - self.fireTime
       bullet:updateLocation(fireSinceNow)
       self.fireTime = self.fireTime + 1/(self.rpm/60)
+    end
+    if self.ammo <= 0 then
+      self:stop()
     end
   end
 end
