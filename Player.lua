@@ -17,6 +17,7 @@ function Player:init()
   self.fixture = love.physics.newFixture(self.body, self.shape)
   self.body:setActive(false)
   self.fixture:setUserData(self)
+  self.image = love.graphics.newImage("res/img/player.png")
 end
 
 function Player:setSpeed(speed)
@@ -25,8 +26,9 @@ function Player:setSpeed(speed)
 end
 
 function Player:draw()
-  love.graphics.setColor(0, 119, 0, 255)
-  love.graphics.circle('fill', self.pos.x, self.pos.y, self.size, 16)
+  if self.image then
+    love.graphics.draw(self.image, self.pos.x - (self.image:getWidth()/2), self.pos.y - (self.image:getHeight()/2))
+  end
   if self.weapon then
     self.weapon:draw()
   end
