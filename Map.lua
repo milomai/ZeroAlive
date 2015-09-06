@@ -27,7 +27,7 @@ function Map:loadTiles()
       if not (tileID == 0) then
         local tile = self.tiles[tileID]
         local x = (math.fmod(index-1, self.tileMap.width))*self.tileMap.tilewidth
-        local y = math.modf(index/self.tileMap.height)*self.tileMap.tileheight
+        local y = math.modf((index-1)/self.tileMap.height)*self.tileMap.tileheight
         self.spriteBatch:add(tile.quad, x, y)
         if tile.solid then
           local body = love.physics.newBody(world.physics, x+self.tileMap.tilewidth/2, y+self.tileMap.tileheight/2)
