@@ -27,11 +27,6 @@ function Bullet:deltaValue()
   self.pos.y = self.pos.y + (player.size+1) * math.sin(self.angle)
 end
 
-function Bullet:updateLocation(dt)
-  self.pos.x = self.body:getX()
-  self.pos.y = self.body:getY()
-end
-
 function Bullet:draw()
   love.graphics.setPointSize(4)
   love.graphics.setColor(255, 255, 100, 255)
@@ -39,5 +34,6 @@ function Bullet:draw()
 end
 
 function Bullet:update(dt)
-  self:updateLocation(dt)
+  self.pos.x = self.body:getX()
+  self.pos.y = self.body:getY()
 end

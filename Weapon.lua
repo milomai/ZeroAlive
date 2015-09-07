@@ -38,7 +38,6 @@ function Weapon:update(dt)
       world:add(bullet)
       self.ammo = self.ammo - 1
       fireSinceNow = love.timer.getTime() - self.fireTime
-      bullet:updateLocation(fireSinceNow)
       self.fireTime = self.fireTime + 1/(self.rpm/60)
     end
     if self.ammo <= 0 then
