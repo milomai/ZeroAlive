@@ -40,20 +40,26 @@ function love.draw()
   world:draw()
   love.graphics.pop()
   
-  love.graphics.push('all')
-  love.graphics.print(love.timer.getFPS())
+  --love.graphics.print(love.timer.getFPS())
   --love.graphics.print(string.format("%.1f", player.pos.x)..','..string.format("%.1f", player.pos.y))
   --drawAimLine()
   if not player.alive then
+    love.graphics.push('all')
     love.graphics.setColor(255, 255, 0, 255)
     love.graphics.print('Game Over', love.window.getWidth()/2, love.window.getHeight()/2, 0, 2, 2, 37, 7)
+    love.graphics.pop()
   else 
     if world.pause then
+      love.graphics.push('all')
       love.graphics.setColor(255, 255, 255, 255)
       love.graphics.print('Pause', love.window.getWidth()/2, love.window.getHeight()/2, 0, 2, 2, 37, 7)
+      love.graphics.pop()
+    else
+      love.graphics.push('all')
+      love.graphics.print('AMMO:' .. player.weapon.ammo .. '/' .. player.weapon.maxAmmo)
+      love.graphics.pop()
     end
   end
-  love.graphics.pop()
 end
 
 function love.keypressed(key, isRepeat)
