@@ -25,7 +25,7 @@ local function beginContact(a, b, coll)
   end
   
   if enemy and player and enemy.alive and player.alive then
-    player:die()
+    enemy:attack(player)
   end
 end
 

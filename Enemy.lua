@@ -1,4 +1,4 @@
-Enemy = class("Enemy", {size = 8, collidable = true, speed = 36, alive = true, linearDamping = 1})
+Enemy = class("Enemy", {size = 8, collidable = true, speed = 36, alive = true, linearDamping = 1, damge = 5})
 
 function Enemy:init(posX, posY)
   self.pos = {}
@@ -52,6 +52,10 @@ function Enemy:die()
     self.diePS = getPS('res/particle/Blood', image)
     self.removeRemainTime = self.diePS:getEmitterLifetime()+math.max(self.diePS:getParticleLifetime())
   end
+end
+
+function Enemy:attack(roler)
+  roler:hit(self.damge)
 end
 
 function Enemy.Generate(posX, posY, size)

@@ -5,6 +5,7 @@ Player = class("Player",
    size = 10,
    speed = 640,
    alive = true,
+   hp = 100,
    collidable = true,
    forceDraw = true,
    linearDamping = 16})
@@ -63,6 +64,13 @@ function Player:update(dt)
   self.pos.x = self.body:getX()
   self.pos.y = self.body:getY()
   if self.weapon then self.weapon:update(dt) end
+end
+
+function Player:hit(damge)
+  self.hp = self.hp - damge
+  if self.hp <= 0 then
+    self:die()
+  end
 end
 
 function Player:die()
