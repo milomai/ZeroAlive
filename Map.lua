@@ -1,8 +1,10 @@
 Map = class("Map", {forceDraw = true, solid = true})
 
-function Map:init(file)
+function Map:init(file, physics)
   self.tileMap = require(file)
+  self.physics = physics
   self:loadImages(self.tileMap.tilesets)
+  self:loadTiles()
 end
 
 function Map:loadImages(tilesets)
@@ -11,9 +13,15 @@ function Map:loadImages(tilesets)
   self.spriteBatch = love.graphics.newSpriteBatch(image, self.tileMap.width*self.tileMap.height)
   self.tiles = {}
   for i = 1, set.tilecount do
-    local tile = set.tiles[i]
-    table.insert(self.tiles, set.firstgid + tile.id, tile.properties)
-    tile.properties.quad = love.graphics.newQuad((i-1)*set.tilewidth, 0, set.tilewidth, set.tileheight, image:getDimensions())
+    local tile = {};
+    tile.quad = love.graphics.newQuad((i-1)*set.tilewidth, 0, set.tilewidth, set.tileheight, image:getDimensions())
+    self.tiles[set.firstgid + (i-1)] = tile
+  end
+  
+  for _, tile in ipairs(set.tiles) do
+    for k, v in pairs(tile.properties) do 
+      self.tiles[tile.id+1][k] = v 
+    end
   end
 end
 
@@ -29,8 +37,10 @@ function Map:loadTiles()
         local x = (math.fmod(index-1, self.tileMap.width))*self.tileMap.tilewidth
         local y = math.modf((index-1)/self.tileMap.height)*self.tileMap.tileheight
         self.spriteBatch:add(tile.quad, x, y)
+        
+        -- 处理方块的属性
         if tile.solid then
-          local body = love.physics.newBody(world.physics, x+self.tileMap.tilewidth/2, y+self.tileMap.tileheight/2)
+          local body = love.physics.newBody(self.physics, x+self.tileMap.tilewidth/2, y+self.tileMap.tileheight/2)
           local shape = love.physics.newRectangleShape(self.tileMap.tilewidth, self.tileMap.tileheight)
           love.physics.newFixture(body, shape)
         end

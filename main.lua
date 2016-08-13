@@ -12,11 +12,7 @@ function love.load(arg)
   if arg[#arg] == "-debug" then require("mobdebug").start() end
   
   love.graphics.setPointSize(2)
-  
-  local map = Map:new('res/map/stage1')
-  world = World:new(map:size())
-  world.map = map
-  map:loadTiles()
+  world = World:new({mapPath = 'res/map/stage2'})
   player = Player:new()
   player.weapon = Weapon:new()
   world:add(player)

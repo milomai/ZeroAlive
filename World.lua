@@ -1,3 +1,4 @@
+require('Map')
 box2DDebugDraw = require('debugWorldDraw')
 World = class("World")
 
@@ -30,15 +31,37 @@ local function beginContact(a, b, coll)
 end
 
 local _objects = {}
-function World:init(width, height)
-  self.size = {}
-  self.size.width = width
-  self.size.height = height
-  self.focus = {x = self.size.width/2, y = self.size.height/2}
+
+--[[
+  map: 创建世界时使用的地图，会覆盖 width 和 height 参数
+]]
+function World:init(option)
+  -- 初始化物理引擎
   love.physics.setMeter(32)
   self.physics = love.physics.newWorld(0, 0, true)
   self.physics:setCallbacks(beginContact)
+  
+  self.size = {}
+  -- 读取地图信息
+  if option.mapPath then
+    self:loadMap(option.mapPath)
+  else 
+    if not option.width then option.width = 0 end
+    if not option.height then option.height = 0 end
+    self.size.width = option.width
+    self.size.height = option.height
+  end
+  
+
+  self.focus = {x = self.size.width/2, y = self.size.height/2}
   self.generateEnemy = true
+end
+
+function World:loadMap(mapPath)
+  self.map = Map:new('res/map/stage2', self.physics)
+  width, height = self.map:size()
+  self.size.width = width
+  self.size.height = height
 end
 
 function World:add(object)
