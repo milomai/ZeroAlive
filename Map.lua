@@ -70,14 +70,19 @@ function Map:loadTiles()
   end
 end
 
---将游戏坐标转换为tile坐标
-local function tileCoordinates(worldX, worldY, layer)
-  return math.floor(worldX/self.tileMap.tilewidth), math.floor(worldY/self.tileMap.tileheight)
+-- 将游戏坐标转换为tile坐标
+-- @param tilePos 游戏坐标 {x= , y= }
+-- @return 地图坐标 {x= , y= }
+function Map:tileCoordinates(worldPos)
+  return {
+    x = math.floor(worldPos.x/self.tileMap.tilewidth)+1, 
+    y = math.floor(worldPos.y/self.tileMap.tileheight)+1
+  }
 end
 
 function Map:isSolid(worldPos)
-  local x, y = self:tileCoordinates(worldPos)
-  local tileID = self.data[y][x]
+  local tilePos = self:tileCoordinates(worldPos)
+  local tileID = self.data[tilePos.y][tilePos.x]
   return self.tiles[tileID].solid
 end
 
