@@ -65,6 +65,7 @@ function Map:loadTiles()
           love.physics.newFixture(body, shape)
         end
       end
+     tileX = tileX + 1
     end
   end
 end
