@@ -1,3 +1,5 @@
+require("terra")
+
 Map = class("Map", {forceDraw = true, solid = true})
 
 function Map:init(file, physics)
