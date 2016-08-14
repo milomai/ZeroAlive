@@ -40,12 +40,22 @@ function Map:size()
 end
 
 function Map:loadTiles()
+  self.data = {}
   for _, layer in ipairs(self.tileMap.layers) do
-    for index, tileID in ipairs(layer.data) do
-      if not (tileID == 0) then
-        local tile = self.tiles[tileID]
-        local x = (math.fmod(index-1, self.tileMap.width))*self.tileMap.tilewidth
-        local y = math.modf((index-1)/self.tileMap.height)*self.tileMap.tileheight
+    local tileX, tileY = 1, 1
+    for _, tileID in ipairs(layer.data) do
+      if tileX > self.tileMap.width then
+        tileX = tileX - self.tileMap.width
+        tileY = tileY + 1
+      end
+      
+      local tile = self.tiles[tileID]
+      if tile then
+        if not self.data[tileY] then self.data[tileY] = {} end
+        self.data[tileY][tileX] = tileID
+        
+        local x = (tileX-1)*self.tileMap.tilewidth
+        local y = (tileY-1)*self.tileMap.tileheight
         self.spriteBatch:add(tile.quad, x, y)
         
         -- 处理方块的属性
