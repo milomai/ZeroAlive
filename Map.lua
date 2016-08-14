@@ -54,6 +54,12 @@ local function tileCoordinates(worldX, worldY, layer)
   return math.floor(worldX/self.tileMap.tilewidth), math.floor(worldY/self.tileMap.tileheight)
 end
 
+function Map:isSolid(worldPos)
+  local x, y = self:tileCoordinates(worldPos)
+  local tileID = self.data[y][x]
+  return self.tiles[tileID].solid
+end
+
 function Map:draw()
   love.graphics.push()
   if self.spriteBatch then

@@ -62,7 +62,12 @@ function Enemy.Generate(posX, posY, size)
   if posX == nil then posX = world.size.width * love.math.random() end
   if posY == nil then posY = world.size.height * love.math.random() end
   if size == nil then size = 20 end
-  local enemy = Enemy:new(posX, posY)
-  enemy.target = player.pos
+  local pos = {x = posX, y = posY}
+  while world.map:isSolid(pos) do
+    pos.x = world.size.width * love.math.random()
+    pos.y = world.size.height * love.math.random()
+  end
+  local enemy = Enemy:new(pos.x, pos.y)
+  enemy.target = player
   world:add(enemy)
 end
