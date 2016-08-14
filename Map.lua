@@ -96,6 +96,15 @@ function Map:worldCoordinates(tilePos)
   }
 end
 
+function Map:findPath(from, to)
+  local tileFrom = self:tileCoordinates(from)
+  terra.setStartingNode(tileFrom.y, tileFrom.x)
+  local tileTo = self:tileCoordinates(to)
+	terra.setTargetNode(tileTo.y, tileTo.x)
+	local path = terra.pathfind(self.data)
+  return path
+end
+
 function Map:draw()
   love.graphics.push()
   if self.spriteBatch then
