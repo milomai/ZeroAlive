@@ -22,18 +22,36 @@ function Enemy:draw()
 end
 
 --向指定坐标移动
-function Enemy:moveTo(x, y, dt)
-  local angle = math.angle(self.pos.x, self.pos.y, x, y)
+function Enemy:moveTo(pos, dt)
+  local angle = math.angle(self.pos.x, self.pos.y, pos.x, pos.y)
   local dx = self.speed * math.cos(angle) * dt
   local dy = self.speed * math.sin(angle) * dt
   self.body:applyLinearImpulse(dx, dy)
+end
+
+function Enemy:findPathTo(target)
+  self.path = world.map:findPath(self.pos, target)
+end
+
+function Enemy:moveOnPath(dt)
+  if not self.path then return end
+  local target = self.path[1]
+  if self.currentTile.x == target.x and self.currentTile.y == target.y then
+    table.remove(self.path, 1)
+    target = self.path[1]
+  end
+  if not target then 
+    self.path = nil 
+    return 
+  end
+  self:moveTo(world.map:worldCoordinates(target), dt)
 end
 
 function Enemy:update(dt)
   self.pos.x = self.body:getX()
   self.pos.y = self.body:getY()
   if self.alive then
-    self:moveTo(self.target.x, self.target.y, dt)
+      self:moveTo(self.target.pos, dt)
   elseif self.diePS then
     self.diePS:update(dt)
     if self.removeRemainTime <= 0 then
