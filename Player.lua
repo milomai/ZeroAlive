@@ -19,6 +19,7 @@ function Player:init()
   self.body:setActive(false)
   self.fixture:setUserData(self)
   self.image = love.graphics.newImage("res/img/player.png")
+  self.tile = {}
 end
 
 function Player:setSpeed(speed)
@@ -63,6 +64,14 @@ end
 function Player:update(dt)
   self.pos.x = self.body:getX()
   self.pos.y = self.body:getY()
+  local currentTile = {}
+  currentTile = world.map:tileCoordinates(self.pos)
+  if not (currentTile.x == self.tile.x) or not (currentTile.y == self.tile.y) then
+    self.tileChanged = true
+    self.tile = currentTile
+  else
+    self.tileChanged = false
+  end
   if self.weapon then self.weapon:update(dt) end
 end
 
