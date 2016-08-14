@@ -25,6 +25,14 @@ function Map:loadImages(tilesets)
       self.tiles[tile.id+1][k] = v 
     end
   end
+  
+  local walkable = {}
+  for i, tile in pairs(self.tiles) do
+    if not tile.solid then
+      table.insert(walkable, i)
+    end
+  end
+  terra.setWalkableNodes(walkable)
 end
 
 function Map:size()
