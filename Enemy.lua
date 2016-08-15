@@ -34,7 +34,7 @@ function Enemy:findPathTo(target)
 end
 
 function Enemy:moveOnPath(dt)
-  if not self.path then return end
+  if not self.path or #self.path == 0 then return end
   local target = self.path[1]
   if self.currentTile.x == target.x and self.currentTile.y == target.y then
     table.remove(self.path, 1)
@@ -63,7 +63,6 @@ function Enemy:update(dt)
       if self.target.tileChanged or not self.path then
         startTime = love.timer.getTime()
         self:findPathTo(self.target.pos)
-        print(self.id .. ' end: +' .. (love.timer.getTime() - startTime))
       end
       self:moveOnPath(dt)
     end

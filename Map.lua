@@ -5,6 +5,7 @@ Map = class("Map", {forceDraw = true, solid = true})
 function Map:init(file, physics)
   self.tileMap = require(file)
   self.physics = physics
+  self.walkableMap = {} -- 二维数组。标记是否可以通过的方块，0表示可以通过，1为不可通过
   self:loadImages(self.tileMap.tilesets)
   self:loadTiles()
 end
@@ -26,12 +27,7 @@ function Map:loadImages(tilesets)
     end
   end
   
-  local walkable = {}
-  for i, tile in pairs(self.tiles) do
-    if not tile.solid then
-      table.insert(walkable, i)
-    end
-  end
+  local walkable = {0}
   terra.setWalkableNodes(walkable)
 end
 
@@ -40,7 +36,6 @@ function Map:size()
 end
 
 function Map:loadTiles()
-  self.data = {}
   for _, layer in ipairs(self.tileMap.layers) do
     local tileX, tileY = 1, 1
     for _, tileID in ipairs(layer.data) do
@@ -51,8 +46,8 @@ function Map:loadTiles()
       
       local tile = self.tiles[tileID]
       if tile then
-        if not self.data[tileY] then self.data[tileY] = {} end
-        self.data[tileY][tileX] = tileID
+        if not self.walkableMap[tileY] then self.walkableMap[tileY] = {} end
+        self.walkableMap[tileY][tileX] = (tile.solid and 1) or 0
         
         local x = (tileX-1)*self.tileMap.tilewidth
         local y = (tileY-1)*self.tileMap.tileheight
@@ -82,8 +77,8 @@ end
 
 function Map:isSolid(worldPos)
   local tilePos = self:tileCoordinates(worldPos)
-  local tileID = self.data[tilePos.y][tilePos.x]
-  return self.tiles[tileID].solid
+  local walkable = self.walkableMap[tilePos.y][tilePos.x]
+  return walkable == 1
 end
 
 -- 将地图坐标转换为游戏坐标
@@ -101,7 +96,7 @@ function Map:findPath(from, to)
   terra.setStartingNode(tileFrom.y, tileFrom.x)
   local tileTo = self:tileCoordinates(to)
 	terra.setTargetNode(tileTo.y, tileTo.x)
-	local path = terra.pathfind(self.data)
+	local path = terra.pathfind(self.walkableMap)
   return path
 end
 
