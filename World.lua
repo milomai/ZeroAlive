@@ -205,6 +205,8 @@ function World:update(dt)
     end
   end
   
+  self.map:update(dt)
+  
   self:removeOutOfRangeObjects()
   removeUnusedObjects()
 end

@@ -1,5 +1,8 @@
 require("terra")
 
+local Grid = require ("jumper.grid") -- The grid class
+local Pathfinder = require ("jumper.pathfinder") -- The pathfinder lass
+
 Map = class("Map", {forceDraw = true, solid = true})
 
 function Map:init(file, physics)
@@ -8,6 +11,8 @@ function Map:init(file, physics)
   self.walkableMap = {} -- 二维数组。标记是否可以通过的方块，0表示可以通过，1为不可通过
   self:loadImages(self.tileMap.tilesets)
   self:loadTiles()
+  self:buildPathFinder()
+  self.findPathUsage = 0
 end
 
 function Map:loadImages(tilesets)
@@ -65,6 +70,11 @@ function Map:loadTiles()
   end
 end
 
+function Map:buildPathFinder()
+  local grid = Grid(self.walkableMap)
+  self.pathFinder = Pathfinder(grid, 'ASTAR', 0)
+end
+
 -- 将游戏坐标转换为tile坐标
 -- @param tilePos 游戏坐标 {x= , y= }
 -- @return 地图坐标 {x= , y= }
@@ -93,10 +103,11 @@ end
 
 function Map:findPath(from, to)
   local tileFrom = self:tileCoordinates(from)
-  terra.setStartingNode(tileFrom.y, tileFrom.x)
   local tileTo = self:tileCoordinates(to)
-	terra.setTargetNode(tileTo.y, tileTo.x)
-	local path = terra.pathfind(self.walkableMap)
+  local time = love.timer.getTime()
+	local path = self.pathFinder:getPath(tileFrom.x, tileFrom.y, tileTo.x, tileTo.y)
+  local usage = love.timer.getTime()-time
+  self.findPathUsage = self.findPathUsage + usage
   return path
 end
 
@@ -127,5 +138,8 @@ function Map:draw()
 end
 
 function Map:update(dt)
-  
+  if self.findPathUsage > 0 then
+    print('usage:' .. self.findPathUsage)
+  end
+  self.findPathUsage = 0
 end
