@@ -76,6 +76,7 @@ function Enemy:update(dt)
 end
 
 function Enemy:die()
+  world.enemyCount = world.enemyCount - 1
   if not self.alive then return end
   self.alive = false
   self.collidable = false

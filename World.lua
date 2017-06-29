@@ -54,7 +54,8 @@ function World:init(option)
   
 
   self.focus = {x = self.size.width/2, y = self.size.height/2}
-  self.generateEnemy = true
+  self.enemyCount = 0
+  self.generateEnemy = false
 end
 
 function World:loadMap(mapPath)
@@ -185,6 +186,7 @@ function World:update(dt)
     remainTime = remainTime - dt
     if remainTime <= 0 then
       Enemy.Generate()
+      self.enemyCount = self.enemyCount + 1
       remainTime = remainTime + EnemyGenerateRate
     end
   end

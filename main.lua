@@ -52,7 +52,7 @@ function love.draw()
       love.graphics.pop()
     else
       love.graphics.push('all')
-      love.graphics.print('HP:'.. player.hp .. '/100' .. ' AMMO:' .. player.weapon.ammo .. '/' .. player.weapon.maxAmmo)
+      love.graphics.print('HP:'.. player.hp .. '/100' .. ' | AMMO:' .. player.weapon.ammo .. '/' .. player.weapon.maxAmmo .. ' | Enemies:' .. world.enemyCount)
       love.graphics.pop()
     end
   end
