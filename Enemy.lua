@@ -1,4 +1,4 @@
-Enemy = class("Enemy", {size = 8, collidable = true, speed = 200, alive = true, linearDamping = 8, damge = 5})
+Enemy = class("Enemy", {size = 8, collidable = true, speed = 180, alive = true, linearDamping = 8, damge = 5})
 
 function Enemy:init(posX, posY)
   self.pos = {}
@@ -45,7 +45,7 @@ function Enemy:moveOnPath(dt)
     self.path = nil 
     return 
   end
-  self:moveTo(world.map:worldCoordinates(target), dt * factor)
+  self:moveTo(world.map:worldCoordinates(target), dt)
 end
 
 function Enemy:moveToTarget(dt)
