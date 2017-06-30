@@ -55,7 +55,7 @@ function World:init(option)
 
   self.focus = {x = self.size.width/2, y = self.size.height/2}
   self.enemyCount = 0
-  self.generateEnemy = false
+  self.generateEnemy = true
 end
 
 function World:loadMap(mapPath)
