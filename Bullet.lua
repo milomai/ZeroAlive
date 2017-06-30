@@ -1,5 +1,7 @@
 Bullet = class("Bullet", {angle = 0, speed = 800, collidable = true})
 
+trackImage = gradient({{255,255,255,255},{255,255,255,0}})
+
 function Bullet:init()
   self.pos = {}
 end
@@ -27,10 +29,16 @@ function Bullet:deltaValue()
   self.pos.y = self.pos.y + (player.size+1) * math.sin(self.angle)
 end
 
-function Bullet:draw()
-  love.graphics.setPointSize(4)
-  love.graphics.setColor(255, 255, 100, 255)
+function Bullet:debugDraw()
+  love.graphics.push('all')
+  love.graphics.setPointSize(1)
+  love.graphics.setColor(255, 0, 0, 255)
   love.graphics.point(self.pos.x, self.pos.y)
+  love.graphics.pop()
+end
+
+function Bullet:draw()
+  drawInRect(trackImage, self.pos.x, self.pos.y, self.speed/40, 1, math.pi + self.angle)
 end
 
 function Bullet:update(dt)

@@ -1,10 +1,12 @@
+require('ulits')
+
 class = require('30log')
 require('World')
 require('Player')
 require('Bullet')
 require('Enemy')
 require('Map')
-require('ulits')
+
 
 local mouse = {x = 0, y = 0}
 local edgePoint = {x = 0, y = 0}

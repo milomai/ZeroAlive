@@ -100,3 +100,27 @@ function getPS(name, image)
     ps:setRelativeRotation(true)
     return ps
 end
+
+--[[
+生成渐变图
+@param colors Array 颜色 RGBA 数组。
+例如白色到透明的渐变：{{255,255,255,255},{255,255,255,0}}
+Alpha 可以省略，默认为 255，不透明。
+返回一张可拉伸的图片
+]]
+function gradient(colors)
+    local result = love.image.newImageData(#colors, 1)
+    for i, color in ipairs(colors) do
+        local x, y = i - 1, 0
+        result:setPixel(x, y, color[1], color[2], color[3], color[4] or 255)
+    end
+    result = love.graphics.newImage(result)
+    result:setFilter('linear', 'linear')
+    return result
+end
+
+--绘制渐变图案
+function drawInRect(img, x, y, w, h, r, ox, oy, kx, ky)
+    return -- tail call for a little extra bit of efficiency
+    love.graphics.draw(img, x, y, r, w / img:getWidth(), h / img:getHeight(), ox, oy, kx, ky)
+end
