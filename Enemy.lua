@@ -1,4 +1,4 @@
-Enemy = class("Enemy", {size = 8, collidable = true, speed = 36, alive = true, linearDamping = 1, damge = 5})
+Enemy = class("Enemy", {size = 8, collidable = true, speed = 200, alive = true, linearDamping = 8, damge = 5})
 
 function Enemy:init(posX, posY)
   self.pos = {}
@@ -11,10 +11,11 @@ function Enemy:init(posX, posY)
 end
 
 function Enemy:draw()
-  love.graphics.push()
+  love.graphics.push('all')
   if self.alive then
-    love.graphics.setColor(200, 0, 0, 255)
+    love.graphics.setColor(100, 0, 0, 255)
     love.graphics.circle('fill', self.pos.x, self.pos.y, self.size, 16)
+    --self:debugDraw()
   elseif self.diePS then
     love.graphics.draw(self.diePS, self.pos.x, self.pos.y)
   end
@@ -44,34 +45,48 @@ function Enemy:moveOnPath(dt)
     self.path = nil 
     return 
   end
-  self:moveTo(world.map:worldCoordinates(target), dt)
+  self:moveTo(world.map:worldCoordinates(target), dt * factor)
+end
+
+function Enemy:moveToTarget(dt)
+  if not self.currentTile then self.currentTile = {} end
+    
+  -- 如果和目标在同一个tile上，直接向目标移动
+  self.currentTile = world.map:tileCoordinates(self.pos)
+  local target = {}
+  target = world.map:tileCoordinates(self.target.pos)
+  if self.currentTile.x == target.x and self.currentTile.y == target.y then
+    self:moveTo(self.target.pos, dt)
+  else
+    if self.target.tileChanged or not self.path then
+      startTime = love.timer.getTime()
+      self:findPathTo(self.target.pos)
+    end
+    self:moveOnPath(dt)
+  end
 end
 
 function Enemy:update(dt)
   self.pos.x = self.body:getX()
   self.pos.y = self.body:getY()
   if self.alive then
-    if not self.currentTile then self.currentTile = {} end
-    
-    -- 如果和目标在同一个tile上，直接向目标移动
-    self.currentTile = world.map:tileCoordinates(self.pos)
-    local target = {}
-    target = world.map:tileCoordinates(self.target.pos)
-    if self.currentTile.x == target.x and self.currentTile.y == target.y then
-      self:moveTo(self.target.pos, dt)
-    else
-      if self.target.tileChanged or not self.path then
-        startTime = love.timer.getTime()
-        self:findPathTo(self.target.pos)
-      end
-      self:moveOnPath(dt)
-    end
+    self:moveToTarget(dt)
   elseif self.diePS then
     self.diePS:update(dt)
     if self.removeRemainTime <= 0 then
       self.removed = true
     end
     self.removeRemainTime = self.removeRemainTime - dt
+  end
+end
+
+function Enemy:debugDraw()
+  if not self.path then return end
+  local startPos = self.pos
+  for i, target in ipairs(self.path) do
+    local pos = world.map:worldCoordinates(target)
+    love.graphics.line(startPos.x, startPos.y, pos.x, pos.y)
+    startPos = pos
   end
 end
 
