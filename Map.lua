@@ -1,5 +1,3 @@
-require("terra")
-
 local Grid = require ("jumper.grid") -- The grid class
 local Pathfinder = require ("jumper.pathfinder") -- The pathfinder lass
 
@@ -31,9 +29,6 @@ function Map:loadImages(tilesets)
       self.tiles[tile.id+1][k] = v 
     end
   end
-  
-  local walkable = {0}
-  terra.setWalkableNodes(walkable)
 end
 
 function Map:size()
