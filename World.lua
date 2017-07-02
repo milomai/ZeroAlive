@@ -75,7 +75,7 @@ end
 function World:vision()
   local rect = {}
   rect.x, rect.y = self:worldCoordinates(0, 0)
-  rect.width, rect.height = love.window.getWidth(), love.window.getHeight()
+  rect.width, rect.height = love.graphics.getWidth(), love.graphics.getHeight()
   return rect
 end
 
@@ -213,7 +213,7 @@ end
 
 function World:draw()
   love.graphics.push()
-  love.graphics.translate(-self.focus.x+love.window.getWidth()/2, -self.focus.y+love.window.getHeight()/2)
+  love.graphics.translate(-self.focus.x+love.graphics.getWidth()/2, -self.focus.y+love.graphics.getHeight()/2)
   love.graphics.rectangle('line', 0, 0, self.size.width, self.size.height)
   
   self.map:draw()
@@ -237,7 +237,7 @@ end
 --将屏幕坐标转换为游戏坐标
 function World:worldCoordinates(screenX, screenY)
   if screenX == nil or screenY == nil then return end
-  return self.focus.x-love.window.getWidth()/2+screenX, self.focus.y-love.window.getHeight()/2+screenY
+  return self.focus.x-love.graphics.getWidth()/2+screenX, self.focus.y-love.graphics.getHeight()/2+screenY
 end
 
 function World:mousePos()

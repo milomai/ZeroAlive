@@ -45,13 +45,13 @@ function love.draw()
   if not player.alive then
     love.graphics.push('all')
     love.graphics.setColor(255, 255, 0, 255)
-    love.graphics.print('Game Over', love.window.getWidth()/2, love.window.getHeight()/2, 0, 2, 2, 37, 7)
+    love.graphics.print('Game Over', love.graphics.getWidth()/2, love.graphics.getHeight()/2, 0, 2, 2, 37, 7)
     love.graphics.pop()
   else 
     if world.pause then
       love.graphics.push('all')
       love.graphics.setColor(255, 255, 255, 255)
-      love.graphics.print('Pause', love.window.getWidth()/2, love.window.getHeight()/2, 0, 2, 2, 37, 7)
+      love.graphics.print('Pause', love.graphics.getWidth()/2, love.graphics.getHeight()/2, 0, 2, 2, 37, 7)
       love.graphics.pop()
     else
       love.graphics.push('all')

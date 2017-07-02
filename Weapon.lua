@@ -36,7 +36,7 @@ function Weapon:stop()
 end
 
 function Weapon:handleInput()
-  if love.mouse.isDown('l') then
+  if love.mouse.isDown(1) then
     player.weapon:fire()
   else
     player.weapon:stop()

@@ -11,20 +11,20 @@ function updateEdgePoint()
   point.y = player.pos.y
   if dx == 0 then 
     if dy > 0 then
-      point.y = love.window.getHeight()
+      point.y = love.graphics.getHeight()
     else
       point.y = 0
     end
   elseif dy == 0 then
     if dx > 0 then
-      point.x = love.window.getWidth()
+      point.x = love.graphics.getWidth()
     else
       point.x = 0
     end
   else
     local k = dy/dx
     if dx > 0 then
-      point.x = love.window.getWidth()
+      point.x = love.graphics.getWidth()
     else
       point.x = 0
     end
