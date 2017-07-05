@@ -132,7 +132,7 @@ function Map:findPath(from, to)
 end
 
 function Map:draw()
-  love.graphics.push()
+  love.graphics.push('all')
   if self.spriteBatch then
     love.graphics.draw(self.spriteBatch)
   end

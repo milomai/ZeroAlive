@@ -1,5 +1,7 @@
 require('Map')
-box2DDebugDraw = require('debugWorldDraw')
+require "light/postshader"
+require "light/light"
+local box2DDebugDraw = require('debugWorldDraw')
 World = class("World")
 
 --local frameIndex = 0
@@ -55,7 +57,19 @@ function World:init(option)
 
   self.focus = {x = self.size.width/2, y = self.size.height/2}
   self.enemyCount = 0
-  self.generateEnemy = true
+  self.generateEnemy = false
+  
+  self:initLight()
+end
+
+function World:initLight()
+  -- light world
+	self.light = love.light.newWorld()
+  self.light.setAmbientColor(15, 15, 31) -- optional
+  
+  -- create light (x, y, red, green, blue, range)
+    lightMouse = self.light.newLight(0, 0, 255, 127, 63, 300)
+    lightMouse.setGlowStrength(0.3) -- optional
 end
 
 function World:loadMap(mapPath)
@@ -209,6 +223,10 @@ function World:update(dt)
   
   self:removeOutOfRangeObjects()
   removeUnusedObjects()
+  
+  if lightMouse then
+    lightMouse.setPosition(love.mouse.getX(), love.mouse.getY())
+  end
 end
 
 function World:draw()
@@ -232,6 +250,19 @@ function World:draw()
     end
   end
   love.graphics.pop()
+  
+  if self.light then
+    love.graphics.push()
+        -- update lightmap (doesn't need deltatime)
+    self.light.update()
+
+    -- draw lightmap shadows
+    self.light.drawShadow()
+
+    -- draw lightmap shine
+    self.light.drawShine()
+    love.graphics.pop()
+  end
 end
 
 --将屏幕坐标转换为游戏坐标

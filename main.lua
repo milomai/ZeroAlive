@@ -25,6 +25,7 @@ end
 local num = 0
 
 function love.update(dt)
+  
   if player.alive then
     world:update(dt)
   end
@@ -54,8 +55,9 @@ function love.draw()
       love.graphics.print('Pause', love.graphics.getWidth()/2, love.graphics.getHeight()/2, 0, 2, 2, 37, 7)
       love.graphics.pop()
     else
+      local stats = love.graphics.getStats()
       love.graphics.push('all')
-      love.graphics.print('HP:'.. player.hp .. '/100' .. ' | AMMO:' .. player.weapon.ammo .. '/' .. player.weapon.maxAmmo .. ' | Enemies:' .. world.enemyCount)
+      love.graphics.print('HP:'.. player.hp .. '/100' .. ' | AMMO:' .. player.weapon.ammo .. '/' .. player.weapon.maxAmmo .. ' | Enemies:' .. world.enemyCount .. ' | FPS:' .. love.timer.getFPS() .. "\nDrawcalls: "..stats.drawcalls.."\nUsed VRAM: "..string.format("%.2f MB", stats.texturememory / 1024 / 1024), 0, 0)
       love.graphics.pop()
     end
   end
@@ -64,6 +66,12 @@ end
 function love.keypressed(key, isRepeat)
   if key == 'escape' then
     world.pause = not world.pause
+  end
+end
+
+function love.resize( w, h )
+  if world.light then
+    world.light:refreshScreenSize()
   end
 end
 
