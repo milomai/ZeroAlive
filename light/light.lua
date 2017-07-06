@@ -418,6 +418,11 @@ function love.light.newWorld()
 		o.reflectionMap2 = love.graphics.newCanvas()
 		o.pixelShadow = love.graphics.newCanvas()
 		o.pixelShadow2 = love.graphics.newCanvas()
+    
+    for i = 1, #o.lights do
+      o.lights[i].shadow = love.graphics.newCanvas()
+      o.lights[i].shine = love.graphics.newCanvas()
+    end
 	end
 	-- draw shadow
 	o.drawShadow = function()
