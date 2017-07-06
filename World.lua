@@ -67,9 +67,9 @@ function World:initLight()
 	self.light = love.light.newWorld()
   self.light.setAmbientColor(15, 15, 31) -- optional
   
-  -- create light (x, y, red, green, blue, range)
+  --[[ create light (x, y, red, green, blue, range)
     lightMouse = self.light.newLight(0, 0, 255, 127, 63, 300)
-    lightMouse.setGlowStrength(0.3) -- optional
+    lightMouse.setGlowStrength(0.3) -- optional ]]--
 end
 
 function World:loadMap(mapPath)
@@ -82,6 +82,9 @@ end
 function World:add(object)
   if object.body then
     object.body:setActive(true)
+  end
+  if object.light and self.light then
+    object.light.object = self.light.newLight(0, 0, unpack(object.light.color), object.light.range)
   end
   _objects[#_objects+1] = object
 end
@@ -269,6 +272,11 @@ end
 function World:worldCoordinates(screenX, screenY)
   if screenX == nil or screenY == nil then return end
   return self.focus.x-love.graphics.getWidth()/2+screenX, self.focus.y-love.graphics.getHeight()/2+screenY
+end
+
+function World:screenCoordinates(worldX, worldY)
+  if worldX == nil or worldY == nil then return end
+  return worldX-(self.focus.x-love.graphics.getWidth()/2), worldY-(self.focus.y-love.graphics.getHeight()/2)
 end
 
 function World:mousePos()

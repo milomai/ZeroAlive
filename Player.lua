@@ -20,6 +20,10 @@ function Player:init()
   self.fixture:setUserData(self)
   self.image = love.graphics.newImage("res/img/player.png")
   self.tile = {}
+  self.light = {
+    color = {255, 127, 63},
+    range = 300
+    }
 end
 
 function Player:setSpeed(speed)
@@ -73,6 +77,9 @@ function Player:update(dt)
     self.tileChanged = false
   end
   if self.weapon then self.weapon:update(dt) end
+  if self.light.object then
+    self.light.object.setPosition(world:screenCoordinates(self.pos.x, self.pos.y))
+  end
 end
 
 function Player:hit(damge)
