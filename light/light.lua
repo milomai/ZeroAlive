@@ -93,7 +93,137 @@ function love.light.newWorld()
 	o.isGlow = false
 	o.isRefraction = false
 	o.isReflection = false
+  o.translate = {x=0, y=0}
 
+  o.updateShadow = function()
+    love.graphics.setShader(o.shader)
+
+    local lightsOnScreen = 0
+    LOVE_LIGHT_BODY = o.body
+    for i = 1, #o.lights do
+      if o.lights[i].changed or o.changed then
+        if o.lights[i].x + o.lights[i].range > LOVE_LIGHT_TRANSLATE_X and o.lights[i].x - o.lights[i].range < love.graphics.getWidth() + LOVE_LIGHT_TRANSLATE_X
+          and o.lights[i].y + o.lights[i].range > LOVE_LIGHT_TRANSLATE_Y and o.lights[i].y - o.lights[i].range < love.graphics.getHeight() + LOVE_LIGHT_TRANSLATE_Y
+        then
+          local lightposrange = {o.lights[i].x, o.lights[i].y, o.lights[i].range}
+          LOVE_LIGHT_CURRENT = o.lights[i]
+          LOVE_LIGHT_DIRECTION = LOVE_LIGHT_DIRECTION + 0.002
+          o.shader:send("lightPosition", {o.lights[i].x - LOVE_LIGHT_TRANSLATE_X, o.lights[i].y - LOVE_LIGHT_TRANSLATE_Y, o.lights[i].z})
+          o.shader:send("lightRange", o.lights[i].range)
+          o.shader:send("lightColor", {o.lights[i].red / 255.0, o.lights[i].green / 255.0, o.lights[i].blue / 255.0})
+          o.shader:send("lightSmooth", o.lights[i].smooth)
+          o.shader:send("lightGlow", {1.0 - o.lights[i].glowSize, o.lights[i].glowStrength})
+          o.shader:send("lightAngle", math.pi - o.lights[i].angle / 2.0)
+          o.shader:send("lightDirection", o.lights[i].direction)
+
+          love.graphics.setCanvas(o.lights[i].shadow)
+          love.graphics.clear()
+
+          -- calculate shadows
+          LOVE_LIGHT_SHADOW_GEOMETRY = calculateShadows(LOVE_LIGHT_CURRENT, LOVE_LIGHT_BODY)
+
+          -- draw shadow
+          love.graphics.stencil(shadowStencil)
+          love.graphics.setStencilTest("equal", 0)
+          --love.graphics.setBlendMode("add")
+          love.graphics.rectangle("fill", LOVE_LIGHT_TRANSLATE_X, LOVE_LIGHT_TRANSLATE_Y, love.graphics.getWidth(), love.graphics.getHeight())
+
+          -- draw color shadows
+          love.graphics.setBlendMode("multiply")
+          love.graphics.setShader()
+          for k = 1,#LOVE_LIGHT_SHADOW_GEOMETRY do
+            if LOVE_LIGHT_SHADOW_GEOMETRY[k].alpha < 1.0 then
+              love.graphics.setColor(
+                LOVE_LIGHT_SHADOW_GEOMETRY[k].red * (1.0 - LOVE_LIGHT_SHADOW_GEOMETRY[k].alpha),
+                LOVE_LIGHT_SHADOW_GEOMETRY[k].green * (1.0 - LOVE_LIGHT_SHADOW_GEOMETRY[k].alpha),
+                LOVE_LIGHT_SHADOW_GEOMETRY[k].blue * (1.0 - LOVE_LIGHT_SHADOW_GEOMETRY[k].alpha)
+              )
+              love.graphics.polygon("fill", unpack(LOVE_LIGHT_SHADOW_GEOMETRY[k]))
+            end
+          end
+
+          for k = 1, #LOVE_LIGHT_BODY do
+            if LOVE_LIGHT_BODY[k].alpha < 1.0 then
+              love.graphics.setBlendMode("multiply")
+              love.graphics.setColor(LOVE_LIGHT_BODY[k].red, LOVE_LIGHT_BODY[k].green, LOVE_LIGHT_BODY[k].blue)
+              if LOVE_LIGHT_BODY[k].shadowType == "circle" then
+                love.graphics.circle("fill", LOVE_LIGHT_BODY[k].x - LOVE_LIGHT_BODY[k].ox, LOVE_LIGHT_BODY[k].y - LOVE_LIGHT_BODY[k].oy, LOVE_LIGHT_BODY[k].radius)
+              elseif LOVE_LIGHT_BODY[k].shadowType == "rectangle" then
+                love.graphics.rectangle("fill", LOVE_LIGHT_BODY[k].x - LOVE_LIGHT_BODY[k].ox, LOVE_LIGHT_BODY[k].y - LOVE_LIGHT_BODY[k].oy, LOVE_LIGHT_BODY[k].width, LOVE_LIGHT_BODY[k].height)
+              elseif LOVE_LIGHT_BODY[k].shadowType == "polygon" then
+                love.graphics.polygon("fill", unpack(LOVE_LIGHT_BODY[k].data))
+              end
+            end
+
+            if LOVE_LIGHT_BODY[k].shadowType == "image" and LOVE_LIGHT_BODY[k].img then
+              love.graphics.setBlendMode("alpha")
+              local length = 1.0
+              local shadowRotation = math.atan2((LOVE_LIGHT_BODY[k].x) - o.lights[i].x, (LOVE_LIGHT_BODY[k].y + LOVE_LIGHT_BODY[k].oy) - o.lights[i].y)
+              local alpha = math.abs(math.cos(shadowRotation))
+
+              LOVE_LIGHT_BODY[k].shadowVert = {
+                {math.sin(shadowRotation) * LOVE_LIGHT_BODY[k].imgHeight * length, (length * math.cos(shadowRotation) + 1.0) * LOVE_LIGHT_BODY[k].imgHeight + (math.cos(shadowRotation) + 1.0) * LOVE_LIGHT_BODY[k].shadowY, 0, 0, LOVE_LIGHT_BODY[k].red, LOVE_LIGHT_BODY[k].green, LOVE_LIGHT_BODY[k].blue, LOVE_LIGHT_BODY[k].alpha * LOVE_LIGHT_BODY[k].fadeStrength * 255},
+                {LOVE_LIGHT_BODY[k].imgWidth + math.sin(shadowRotation) * LOVE_LIGHT_BODY[k].imgHeight * length, (length * math.cos(shadowRotation) + 1.0) * LOVE_LIGHT_BODY[k].imgHeight + (math.cos(shadowRotation) + 1.0) * LOVE_LIGHT_BODY[k].shadowY, 1, 0, LOVE_LIGHT_BODY[k].red, LOVE_LIGHT_BODY[k].green, LOVE_LIGHT_BODY[k].blue, LOVE_LIGHT_BODY[k].alpha * LOVE_LIGHT_BODY[k].fadeStrength * 255},
+                {LOVE_LIGHT_BODY[k].imgWidth, LOVE_LIGHT_BODY[k].imgHeight + (math.cos(shadowRotation) + 1.0) * LOVE_LIGHT_BODY[k].shadowY, 1, 1, LOVE_LIGHT_BODY[k].red, LOVE_LIGHT_BODY[k].green, LOVE_LIGHT_BODY[k].blue, LOVE_LIGHT_BODY[k].alpha * 255},
+                {0, LOVE_LIGHT_BODY[k].imgHeight + (math.cos(shadowRotation) + 1.0) * LOVE_LIGHT_BODY[k].shadowY, 0, 1, LOVE_LIGHT_BODY[k].red, LOVE_LIGHT_BODY[k].green, LOVE_LIGHT_BODY[k].blue, LOVE_LIGHT_BODY[k].alpha * 255}
+              }
+
+              LOVE_LIGHT_BODY[k].shadowMesh:setVertices(LOVE_LIGHT_BODY[k].shadowVert)
+              love.graphics.draw(LOVE_LIGHT_BODY[k].shadowMesh, LOVE_LIGHT_BODY[k].x - LOVE_LIGHT_BODY[k].ox + LOVE_LIGHT_TRANSLATE_X, LOVE_LIGHT_BODY[k].y - LOVE_LIGHT_BODY[k].oy + LOVE_LIGHT_TRANSLATE_Y)
+            end
+          end
+
+          love.graphics.setShader(o.shader)
+
+          -- draw shine
+          love.graphics.setCanvas(o.lights[i].shine)
+          love.graphics.clear(255, 255, 255)
+          love.graphics.setBlendMode("alpha")
+          love.graphics.stencil(polyStencil)
+          love.graphics.setStencilTest("greater", 0)
+          love.graphics.rectangle("fill", o.translate.x, o.translate.y, love.graphics.getWidth(), love.graphics.getHeight())
+
+          lightsOnScreen = lightsOnScreen + 1
+
+          o.lights[i].visible = true
+        else
+          o.lights[i].visible = false
+        end
+
+        o.lights[i].changed = o.changed
+      end
+    end
+
+    -- update shadow
+    love.graphics.setShader()
+    love.graphics.setCanvas(o.shadow)
+    love.graphics.setStencilTest()
+    love.graphics.setColor(unpack(o.ambient))
+    love.graphics.setBlendMode("alpha")
+    love.graphics.rectangle("fill", o.translate.x, o.translate.y, love.graphics.getWidth(), love.graphics.getHeight())
+    love.graphics.setColor(255, 255, 255)
+    love.graphics.setBlendMode("add")
+    for i = 1, #o.lights do
+      if o.lights[i].visible then
+        love.graphics.draw(o.lights[i].shadow, o.translate.x, o.translate.y)
+      end
+    end
+    o.isShadowBlur = false
+
+    -- update shine
+    love.graphics.setCanvas(o.shine)
+    love.graphics.setColor(unpack(o.ambient))
+    love.graphics.setBlendMode("alpha")
+    love.graphics.rectangle("fill", LOVE_LIGHT_TRANSLATE_X, LOVE_LIGHT_TRANSLATE_Y, love.graphics.getWidth(), love.graphics.getHeight())
+    love.graphics.setColor(255, 255, 255)
+    love.graphics.setBlendMode("add")
+    for i = 1, #o.lights do
+      if o.lights[i].visible then
+        love.graphics.draw(o.lights[i].shine, LOVE_LIGHT_TRANSLATE_X, LOVE_LIGHT_TRANSLATE_Y)
+      end
+    end
+  end
+  
 	-- update
 	o.update = function()
 		LOVE_LIGHT_LAST_BUFFER = love.graphics.getCanvas()
@@ -108,132 +238,7 @@ function love.light.newWorld()
 		love.graphics.setBlendMode("alpha")
 
 		if o.optionShadows and (o.isShadows or o.isLight) then
-			love.graphics.setShader(o.shader)
-
-			local lightsOnScreen = 0
-			LOVE_LIGHT_BODY = o.body
-			for i = 1, #o.lights do
-				if o.lights[i].changed or o.changed then
-					if o.lights[i].x + o.lights[i].range > LOVE_LIGHT_TRANSLATE_X and o.lights[i].x - o.lights[i].range < love.graphics.getWidth() + LOVE_LIGHT_TRANSLATE_X
-						and o.lights[i].y + o.lights[i].range > LOVE_LIGHT_TRANSLATE_Y and o.lights[i].y - o.lights[i].range < love.graphics.getHeight() + LOVE_LIGHT_TRANSLATE_Y
-					then
-						local lightposrange = {o.lights[i].x, o.lights[i].y, o.lights[i].range}
-						LOVE_LIGHT_CURRENT = o.lights[i]
-						LOVE_LIGHT_DIRECTION = LOVE_LIGHT_DIRECTION + 0.002
-						o.shader:send("lightPosition", {o.lights[i].x - LOVE_LIGHT_TRANSLATE_X, o.lights[i].y - LOVE_LIGHT_TRANSLATE_Y, o.lights[i].z})
-						o.shader:send("lightRange", o.lights[i].range)
-						o.shader:send("lightColor", {o.lights[i].red / 255.0, o.lights[i].green / 255.0, o.lights[i].blue / 255.0})
-						o.shader:send("lightSmooth", o.lights[i].smooth)
-						o.shader:send("lightGlow", {1.0 - o.lights[i].glowSize, o.lights[i].glowStrength})
-						o.shader:send("lightAngle", math.pi - o.lights[i].angle / 2.0)
-						o.shader:send("lightDirection", o.lights[i].direction)
-
-						love.graphics.setCanvas(o.lights[i].shadow)
-						love.graphics.clear()
-
-						-- calculate shadows
-						LOVE_LIGHT_SHADOW_GEOMETRY = calculateShadows(LOVE_LIGHT_CURRENT, LOVE_LIGHT_BODY)
-
-						-- draw shadow
-						love.graphics.stencil(shadowStencil)
-						love.graphics.setStencilTest("equal", 0)
-						--love.graphics.setBlendMode("add")
-						love.graphics.rectangle("fill", LOVE_LIGHT_TRANSLATE_X, LOVE_LIGHT_TRANSLATE_Y, love.graphics.getWidth(), love.graphics.getHeight())
-
-						-- draw color shadows
-						love.graphics.setBlendMode("multiply")
-						love.graphics.setShader()
-						for k = 1,#LOVE_LIGHT_SHADOW_GEOMETRY do
-							if LOVE_LIGHT_SHADOW_GEOMETRY[k].alpha < 1.0 then
-								love.graphics.setColor(
-									LOVE_LIGHT_SHADOW_GEOMETRY[k].red * (1.0 - LOVE_LIGHT_SHADOW_GEOMETRY[k].alpha),
-									LOVE_LIGHT_SHADOW_GEOMETRY[k].green * (1.0 - LOVE_LIGHT_SHADOW_GEOMETRY[k].alpha),
-									LOVE_LIGHT_SHADOW_GEOMETRY[k].blue * (1.0 - LOVE_LIGHT_SHADOW_GEOMETRY[k].alpha)
-								)
-								love.graphics.polygon("fill", unpack(LOVE_LIGHT_SHADOW_GEOMETRY[k]))
-							end
-						end
-
-						for k = 1, #LOVE_LIGHT_BODY do
-							if LOVE_LIGHT_BODY[k].alpha < 1.0 then
-								love.graphics.setBlendMode("multiply")
-								love.graphics.setColor(LOVE_LIGHT_BODY[k].red, LOVE_LIGHT_BODY[k].green, LOVE_LIGHT_BODY[k].blue)
-								if LOVE_LIGHT_BODY[k].shadowType == "circle" then
-									love.graphics.circle("fill", LOVE_LIGHT_BODY[k].x - LOVE_LIGHT_BODY[k].ox, LOVE_LIGHT_BODY[k].y - LOVE_LIGHT_BODY[k].oy, LOVE_LIGHT_BODY[k].radius)
-								elseif LOVE_LIGHT_BODY[k].shadowType == "rectangle" then
-									love.graphics.rectangle("fill", LOVE_LIGHT_BODY[k].x - LOVE_LIGHT_BODY[k].ox, LOVE_LIGHT_BODY[k].y - LOVE_LIGHT_BODY[k].oy, LOVE_LIGHT_BODY[k].width, LOVE_LIGHT_BODY[k].height)
-								elseif LOVE_LIGHT_BODY[k].shadowType == "polygon" then
-									love.graphics.polygon("fill", unpack(LOVE_LIGHT_BODY[k].data))
-								end
-							end
-
-							if LOVE_LIGHT_BODY[k].shadowType == "image" and LOVE_LIGHT_BODY[k].img then
-								love.graphics.setBlendMode("alpha")
-								local length = 1.0
-								local shadowRotation = math.atan2((LOVE_LIGHT_BODY[k].x) - o.lights[i].x, (LOVE_LIGHT_BODY[k].y + LOVE_LIGHT_BODY[k].oy) - o.lights[i].y)
-								local alpha = math.abs(math.cos(shadowRotation))
-
-								LOVE_LIGHT_BODY[k].shadowVert = {
-									{math.sin(shadowRotation) * LOVE_LIGHT_BODY[k].imgHeight * length, (length * math.cos(shadowRotation) + 1.0) * LOVE_LIGHT_BODY[k].imgHeight + (math.cos(shadowRotation) + 1.0) * LOVE_LIGHT_BODY[k].shadowY, 0, 0, LOVE_LIGHT_BODY[k].red, LOVE_LIGHT_BODY[k].green, LOVE_LIGHT_BODY[k].blue, LOVE_LIGHT_BODY[k].alpha * LOVE_LIGHT_BODY[k].fadeStrength * 255},
-									{LOVE_LIGHT_BODY[k].imgWidth + math.sin(shadowRotation) * LOVE_LIGHT_BODY[k].imgHeight * length, (length * math.cos(shadowRotation) + 1.0) * LOVE_LIGHT_BODY[k].imgHeight + (math.cos(shadowRotation) + 1.0) * LOVE_LIGHT_BODY[k].shadowY, 1, 0, LOVE_LIGHT_BODY[k].red, LOVE_LIGHT_BODY[k].green, LOVE_LIGHT_BODY[k].blue, LOVE_LIGHT_BODY[k].alpha * LOVE_LIGHT_BODY[k].fadeStrength * 255},
-									{LOVE_LIGHT_BODY[k].imgWidth, LOVE_LIGHT_BODY[k].imgHeight + (math.cos(shadowRotation) + 1.0) * LOVE_LIGHT_BODY[k].shadowY, 1, 1, LOVE_LIGHT_BODY[k].red, LOVE_LIGHT_BODY[k].green, LOVE_LIGHT_BODY[k].blue, LOVE_LIGHT_BODY[k].alpha * 255},
-									{0, LOVE_LIGHT_BODY[k].imgHeight + (math.cos(shadowRotation) + 1.0) * LOVE_LIGHT_BODY[k].shadowY, 0, 1, LOVE_LIGHT_BODY[k].red, LOVE_LIGHT_BODY[k].green, LOVE_LIGHT_BODY[k].blue, LOVE_LIGHT_BODY[k].alpha * 255}
-								}
-
-								LOVE_LIGHT_BODY[k].shadowMesh:setVertices(LOVE_LIGHT_BODY[k].shadowVert)
-								love.graphics.draw(LOVE_LIGHT_BODY[k].shadowMesh, LOVE_LIGHT_BODY[k].x - LOVE_LIGHT_BODY[k].ox + LOVE_LIGHT_TRANSLATE_X, LOVE_LIGHT_BODY[k].y - LOVE_LIGHT_BODY[k].oy + LOVE_LIGHT_TRANSLATE_Y)
-							end
-						end
-
-						love.graphics.setShader(o.shader)
-
-						-- draw shine
-						love.graphics.setCanvas(o.lights[i].shine)
-						love.graphics.clear(255, 255, 255)
-						love.graphics.setBlendMode("alpha")
-						love.graphics.stencil(polyStencil)
-						love.graphics.setStencilTest("greater", 0)
-						love.graphics.rectangle("fill", LOVE_LIGHT_TRANSLATE_X, LOVE_LIGHT_TRANSLATE_Y, love.graphics.getWidth(), love.graphics.getHeight())
-
-						lightsOnScreen = lightsOnScreen + 1
-
-						o.lights[i].visible = true
-					else
-						o.lights[i].visible = false
-					end
-
-					o.lights[i].changed = o.changed
-				end
-			end
-
-			-- update shadow
-			love.graphics.setShader()
-			love.graphics.setCanvas(o.shadow)
-			love.graphics.setStencilTest()
-			love.graphics.setColor(unpack(o.ambient))
-			love.graphics.setBlendMode("alpha")
-			love.graphics.rectangle("fill", LOVE_LIGHT_TRANSLATE_X, LOVE_LIGHT_TRANSLATE_Y, love.graphics.getWidth(), love.graphics.getHeight())
-			love.graphics.setColor(255, 255, 255)
-			love.graphics.setBlendMode("add")
-			for i = 1, #o.lights do
-				if o.lights[i].visible then
-					love.graphics.draw(o.lights[i].shadow, LOVE_LIGHT_TRANSLATE_X, LOVE_LIGHT_TRANSLATE_Y)
-				end
-			end
-			o.isShadowBlur = false
-
-			-- update shine
-			love.graphics.setCanvas(o.shine)
-			love.graphics.setColor(unpack(o.ambient))
-			love.graphics.setBlendMode("alpha")
-			love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
-			love.graphics.setColor(255, 255, 255)
-			love.graphics.setBlendMode("add")
-			for i = 1, #o.lights do
-				if o.lights[i].visible then
-					love.graphics.draw(o.lights[i].shine, LOVE_LIGHT_TRANSLATE_X, LOVE_LIGHT_TRANSLATE_Y)
-				end
-			end
+      o.updateShadow()
 		end
 
 		if o.optionPixelShadows and o.isPixelShadows then
@@ -334,7 +339,7 @@ function love.light.newWorld()
 						love.graphics.setShader()
 						love.graphics.setColor(0, 0, 0)
 					end
-					love.graphics.draw(o.body[i].img, o.body[i].x - o.body[i].ix + LOVE_LIGHT_TRANSLATE_X, o.body[i].y - o.body[i].iy + LOVE_LIGHT_TRANSLATE_Y)
+					love.graphics.draw(o.body[i].img, o.body[i].x - o.body[i].ix + o.translate.x, o.body[i].y - o.body[i].iy + o.translate.y)
 				end
 			end
 		end
@@ -591,8 +596,7 @@ function love.light.newWorld()
 	end
 	-- set offset
 	o.setTranslation = function(translateX, translateY)
-		LOVE_LIGHT_TRANSLATE_X = translateX
-		LOVE_LIGHT_TRANSLATE_Y = translateY
+		o.translate.x, o.translate.y = translateX, translateY
 	end
 	-- set ambient color
 	o.setAmbientColor = function(red, green, blue)
