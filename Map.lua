@@ -3,9 +3,10 @@ local Pathfinder = require ("jumper.pathfinder") -- The pathfinder lass
 
 Map = class("Map", {forceDraw = true, solid = true})
 
-function Map:init(file, physics)
+function Map:init(file, physics, light)
   self.tileMap = require(file)
   self.physics = physics
+  self.light = light
   self.walkableMap = {} -- 二维数组。标记是否可以通过的方块，0表示可以通过，1为不可通过
   self:loadImages(self.tileMap.tilesets)
   self:loadTiles()
@@ -58,6 +59,8 @@ function Map:loadTiles()
           local body = love.physics.newBody(self.physics, x+self.tileMap.tilewidth/2, y+self.tileMap.tileheight/2)
           local shape = love.physics.newRectangleShape(self.tileMap.tilewidth, self.tileMap.tileheight)
           love.physics.newFixture(body, shape)
+          
+          self.light.newRectangle(x+self.tileMap.tilewidth/2, y+self.tileMap.tileheight/2, self.tileMap.tilewidth, self.tileMap.tileheight)
         end
       end
      tileX = tileX + 1

@@ -43,6 +43,8 @@ function World:init(option)
   self.physics = love.physics.newWorld(0, 0, true)
   self.physics:setCallbacks(beginContact)
   
+  self:initLight()
+  
   self.size = {}
   -- 读取地图信息
   if option.mapPath then
@@ -58,8 +60,6 @@ function World:init(option)
   self.focus = {x = self.size.width/2, y = self.size.height/2}
   self.enemyCount = 0
   self.generateEnemy = false
-  
-  self:initLight()
 end
 
 function World:initLight()
@@ -73,7 +73,7 @@ function World:initLight()
 end
 
 function World:loadMap(mapPath)
-  self.map = Map:new('res/map/stage2', self.physics)
+  self.map = Map:new('res/map/stage2', self.physics, self.light)
   width, height = self.map:size()
   self.size.width = width
   self.size.height = height
