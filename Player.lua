@@ -78,7 +78,7 @@ function Player:update(dt)
   end
   if self.weapon then self.weapon:update(dt) end
   if self.light.object then
-    self.light.object.setPosition(world:screenCoordinates(self.pos.x, self.pos.y))
+    self.light.object.setPosition(self.pos.x, self.pos.y)
   end
 end
 

@@ -597,6 +597,7 @@ function love.light.newWorld()
 	-- set offset
 	o.setTranslation = function(translateX, translateY)
 		o.translate.x, o.translate.y = translateX, translateY
+    LOVE_LIGHT_TRANSLATE_X, LOVE_LIGHT_TRANSLATE_Y = translateX, translateY
 	end
 	-- set ambient color
 	o.setAmbientColor = function(red, green, blue)

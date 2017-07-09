@@ -252,11 +252,12 @@ function World:draw()
       love.graphics.pop()
     end
   end
-  love.graphics.pop()
   
   if self.light then
     love.graphics.push()
-        -- update lightmap (doesn't need deltatime)
+    
+    self.light.setTranslation(self.focus.x-love.graphics.getWidth()/2, self.focus.y-love.graphics.getHeight()/2)
+    -- update lightmap (doesn't need deltatime)
     self.light.update()
 
     -- draw lightmap shadows
@@ -266,6 +267,8 @@ function World:draw()
     self.light.drawShine()
     love.graphics.pop()
   end
+  
+  love.graphics.pop()
 end
 
 --将屏幕坐标转换为游戏坐标
