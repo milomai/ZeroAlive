@@ -43,7 +43,7 @@ function World:init(option)
   self.physics = love.physics.newWorld(0, 0, true)
   self.physics:setCallbacks(beginContact)
   
-  self:initLight()
+  --self:initLight()
   
   self.size = {}
   -- 读取地图信息
