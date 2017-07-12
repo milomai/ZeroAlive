@@ -17,7 +17,7 @@ function love.load(arg)
   love.graphics.setPointSize(2)
   world = World:new({mapPath = 'res/map/stage2'})
   player = Player:new()
-  player.weapon = Weapon:new()
+  player.weapon = Gun:new()
   world:add(player)
   world.focus = player.pos
 end

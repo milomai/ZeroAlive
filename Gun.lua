@@ -1,11 +1,13 @@
-Weapon = class("Weapon", {
+require("Bullet")
+
+Gun = class("Gun", {
     rpm = 600,                --每分钟射速
     auto = true, 
     accuracy = 4*math.pi/180,
     maxAmmo = 30,
     reloadTime = 3,})
 
-function Weapon:init()
+function Gun:init()
   --开火效果
   local image = love.graphics.newImage('res/img/circle.png')
   self.ps = getPS('res/particle/Fire', image)
@@ -14,14 +16,14 @@ function Weapon:init()
   self.remainReloadTime = 0
 end
 
-function Weapon:fire()
+function Gun:fire()
   if self.ammo <= 0 then return end --弹药不足不能开火
   if self.isFire then return end
   self.isFire = true
   if self.auto then self.fireTime = love.timer.getTime() end
 end
 
-function Weapon:shot(dt)
+function Gun:shot(dt)
   local x, y = world:mousePos()
   while self.fireTime < love.timer.getTime() and self.ammo > 0 do
     local bullet = Bullet:new(player.pos.x, player.pos.y, x, y, self.accuracy)
@@ -31,11 +33,11 @@ function Weapon:shot(dt)
   end
 end
 
-function Weapon:stop()
+function Gun:stop()
   self.isFire = false
 end
 
-function Weapon:handleInput()
+function Gun:handleInput()
   if love.mouse.isDown(1) then
     player.weapon:fire()
   else
@@ -43,11 +45,11 @@ function Weapon:handleInput()
   end
 end
 
-function Weapon:reload()
+function Gun:reload()
   self.remainReloadTime = self.reloadTime
 end
 
-function Weapon:update(dt)
+function Gun:update(dt)
   if self.remainReloadTime > 0 then
     self.remainReloadTime = self.remainReloadTime - dt
     if self.remainReloadTime <= 0 then
@@ -66,7 +68,7 @@ function Weapon:update(dt)
   end
 end
 
-function Weapon:draw()
+function Gun:draw()
   if self.isFire and self.ps and self.auto then
     love.graphics.draw(self.ps, player.pos.x, player.pos.y)
   end

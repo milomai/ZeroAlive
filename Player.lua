@@ -1,4 +1,4 @@
-require('Weapon')
+require('Gun')
 Player = class("Player", 
   {playerName = "New Player",
    pos = {x = 50, y = 50},
