@@ -101,26 +101,26 @@ function love.light.newWorld()
     local lightsOnScreen = 0
     LOVE_LIGHT_BODY = o.body
     for i = 1, #o.lights do
-      if o.lights[i].changed or o.changed then
-        if o.lights[i].x + o.lights[i].range > LOVE_LIGHT_TRANSLATE_X and o.lights[i].x - o.lights[i].range < love.graphics.getWidth() + LOVE_LIGHT_TRANSLATE_X
-          and o.lights[i].y + o.lights[i].range > LOVE_LIGHT_TRANSLATE_Y and o.lights[i].y - o.lights[i].range < love.graphics.getHeight() + LOVE_LIGHT_TRANSLATE_Y
+      local light = o.lights[i]
+      if light.changed or o.changed then
+        if light.x + light.range > LOVE_LIGHT_TRANSLATE_X and light.x - light.range < love.graphics.getWidth() + LOVE_LIGHT_TRANSLATE_X
+          and light.y + light.range > LOVE_LIGHT_TRANSLATE_Y and light.y - light.range < love.graphics.getHeight() + LOVE_LIGHT_TRANSLATE_Y
         then
-          local lightposrange = {o.lights[i].x, o.lights[i].y, o.lights[i].range}
-          LOVE_LIGHT_CURRENT = o.lights[i]
+          local lightposrange = {light.x, light.y, light.range}
           LOVE_LIGHT_DIRECTION = LOVE_LIGHT_DIRECTION + 0.002
-          o.shader:send("lightPosition", {o.lights[i].x - LOVE_LIGHT_TRANSLATE_X, o.lights[i].y - LOVE_LIGHT_TRANSLATE_Y, o.lights[i].z})
-          o.shader:send("lightRange", o.lights[i].range)
-          o.shader:send("lightColor", {o.lights[i].red / 255.0, o.lights[i].green / 255.0, o.lights[i].blue / 255.0})
-          o.shader:send("lightSmooth", o.lights[i].smooth)
-          o.shader:send("lightGlow", {1.0 - o.lights[i].glowSize, o.lights[i].glowStrength})
-          o.shader:send("lightAngle", math.pi - o.lights[i].angle / 2.0)
-          o.shader:send("lightDirection", o.lights[i].direction)
+          o.shader:send("lightPosition", {light.x - LOVE_LIGHT_TRANSLATE_X, light.y - LOVE_LIGHT_TRANSLATE_Y, light.z})
+          o.shader:send("lightRange", light.range)
+          o.shader:send("lightColor", {light.red / 255.0, light.green / 255.0, light.blue / 255.0})
+          o.shader:send("lightSmooth", light.smooth)
+          o.shader:send("lightGlow", {1.0 - light.glowSize, light.glowStrength})
+          o.shader:send("lightAngle", math.pi - light.angle / 2.0)
+          o.shader:send("lightDirection", light.direction)
 
-          love.graphics.setCanvas(o.lights[i].shadow)
+          love.graphics.setCanvas(light.shadow)
           love.graphics.clear()
 
           -- calculate shadows
-          LOVE_LIGHT_SHADOW_GEOMETRY = calculateShadows(LOVE_LIGHT_CURRENT, LOVE_LIGHT_BODY)
+          LOVE_LIGHT_SHADOW_GEOMETRY = calculateShadows(light, LOVE_LIGHT_BODY)
 
           -- draw shadow
           love.graphics.stencil(shadowStencil)
@@ -158,7 +158,7 @@ function love.light.newWorld()
             if LOVE_LIGHT_BODY[k].shadowType == "image" and LOVE_LIGHT_BODY[k].img then
               love.graphics.setBlendMode("alpha")
               local length = 1.0
-              local shadowRotation = math.atan2((LOVE_LIGHT_BODY[k].x) - o.lights[i].x, (LOVE_LIGHT_BODY[k].y + LOVE_LIGHT_BODY[k].oy) - o.lights[i].y)
+              local shadowRotation = math.atan2((LOVE_LIGHT_BODY[k].x) - light.x, (LOVE_LIGHT_BODY[k].y + LOVE_LIGHT_BODY[k].oy) - light.y)
               local alpha = math.abs(math.cos(shadowRotation))
 
               LOVE_LIGHT_BODY[k].shadowVert = {
@@ -176,7 +176,7 @@ function love.light.newWorld()
           love.graphics.setShader(o.shader)
 
           -- draw shine
-          love.graphics.setCanvas(o.lights[i].shine)
+          love.graphics.setCanvas(light.shine)
           love.graphics.clear(255, 255, 255)
           love.graphics.setBlendMode("alpha")
           love.graphics.stencil(polyStencil)
@@ -185,12 +185,12 @@ function love.light.newWorld()
 
           lightsOnScreen = lightsOnScreen + 1
 
-          o.lights[i].visible = true
+          light.visible = true
         else
-          o.lights[i].visible = false
+          light.visible = false
         end
 
-        o.lights[i].changed = o.changed
+        light.changed = o.changed
       end
     end
 
@@ -224,6 +224,65 @@ function love.light.newWorld()
     end
   end
   
+  -- draw normal map
+  o.updateNormalMap = function()
+    -- update pixel shadow
+    love.graphics.setBlendMode("alpha")
+
+    -- create normal map
+    o.normalMap:clear()
+    love.graphics.setShader()
+    love.graphics.setCanvas(o.normalMap)
+    for i = 1, #o.body do
+      if o.body[i].type == "image" and o.body[i].normalMesh then
+        love.graphics.setColor(255, 255, 255)
+        love.graphics.draw(o.body[i].normalMesh, o.body[i].x - o.body[i].nx + LOVE_LIGHT_TRANSLATE_X, o.body[i].y - o.body[i].ny + LOVE_LIGHT_TRANSLATE_Y)
+      end
+    end
+    love.graphics.setColor(255, 255, 255)
+    love.graphics.setBlendMode("alpha")
+
+    o.pixelShadow2:clear()
+    love.graphics.setCanvas(o.pixelShadow2)
+    love.graphics.setBlendMode("additive")
+    love.graphics.setShader(o.shader2)
+
+    for i = 1, #o.lights do
+      if o.lights[i].visible then
+        if o.normalInvert then
+          o.normalInvertShader:send('screenResolution', {love.graphics.getWidth(), love.graphics.getHeight()})
+          o.normalInvertShader:send('lightColor', {o.lights[i].red / 255.0, o.lights[i].green / 255.0, o.lights[i].blue / 255.0})
+          o.normalInvertShader:send('lightPosition',{o.lights[i].x, love.graphics.getHeight() - o.lights[i].y, o.lights[i].z / 255.0})
+          o.normalInvertShader:send('lightRange',{o.lights[i].range})
+          o.normalInvertShader:send("lightSmooth", o.lights[i].smooth)
+          o.normalInvertShader:send("lightAngle", math.pi - o.lights[i].angle / 2.0)
+          o.normalInvertShader:send("lightDirection", o.lights[i].direction)
+          love.graphics.setShader(o.normalInvertShader)
+        else
+          o.normalShader:send('screenResolution', {love.graphics.getWidth(), love.graphics.getHeight()})
+          o.normalShader:send('lightColor', {o.lights[i].red / 255.0, o.lights[i].green / 255.0, o.lights[i].blue / 255.0})
+          o.normalShader:send('lightPosition',{o.lights[i].x, love.graphics.getHeight() - o.lights[i].y, o.lights[i].z / 255.0})
+          o.normalShader:send('lightRange',{o.lights[i].range})
+          o.normalShader:send("lightSmooth", o.lights[i].smooth)
+          o.normalShader:send("lightAngle", math.pi - o.lights[i].angle / 2.0)
+          o.normalShader:send("lightDirection", o.lights[i].direction)
+          love.graphics.setShader(o.normalShader)
+        end
+        love.graphics.draw(o.normalMap, LOVE_LIGHT_TRANSLATE_X, LOVE_LIGHT_TRANSLATE_Y)
+      end
+    end
+
+    love.graphics.setShader()
+    o.pixelShadow:clear(255, 255, 255)
+    love.graphics.setCanvas(o.pixelShadow)
+    love.graphics.setBlendMode("alpha")
+    love.graphics.draw(o.pixelShadow2, LOVE_LIGHT_TRANSLATE_X, LOVE_LIGHT_TRANSLATE_Y)
+    love.graphics.setBlendMode("additive")
+    love.graphics.setColor({o.ambient[1], o.ambient[2], o.ambient[3]})
+    love.graphics.rectangle("fill", LOVE_LIGHT_TRANSLATE_X, LOVE_LIGHT_TRANSLATE_Y, love.graphics.getWidth(), love.graphics.getHeight())
+    love.graphics.setBlendMode("alpha")
+  end
+  
 	-- update
 	o.update = function()
 		LOVE_LIGHT_LAST_BUFFER = love.graphics.getCanvas()
@@ -242,61 +301,7 @@ function love.light.newWorld()
 		end
 
 		if o.optionPixelShadows and o.isPixelShadows then
-			-- update pixel shadow
-			love.graphics.setBlendMode("alpha")
-
-			-- create normal map
-			love.graphics.setShader()
-			love.graphics.setCanvas(o.normalMap)
-			love.graphics.clear()
-			for i = 1, #o.body do
-				if o.body[i].type == "image" and o.body[i].normalMesh then
-					love.graphics.setColor(255, 255, 255)
-					love.graphics.draw(o.body[i].normalMesh, o.body[i].x - o.body[i].nx + LOVE_LIGHT_TRANSLATE_X, o.body[i].y - o.body[i].ny + LOVE_LIGHT_TRANSLATE_Y)
-				end
-			end
-			love.graphics.setColor(255, 255, 255)
-			love.graphics.setBlendMode("alpha")
-
-			love.graphics.setCanvas(o.pixelShadow2)
-			love.graphics.clear()
-			love.graphics.setBlendMode("add")
-			love.graphics.setShader(o.shader2)
-
-			for i = 1, #o.lights do
-				if o.lights[i].visible then
-					if o.normalInvert then
-						o.normalInvertShader:send('screenResolution', {love.graphics.getWidth(), love.graphics.getHeight()})
-						o.normalInvertShader:send('lightColor', {o.lights[i].red / 255.0, o.lights[i].green / 255.0, o.lights[i].blue / 255.0})
-						o.normalInvertShader:send('lightPosition',{o.lights[i].x, o.lights[i].y, o.lights[i].z / 255.0})
-						o.normalInvertShader:send('lightRange',{o.lights[i].range})
-						o.normalInvertShader:send("lightSmooth", o.lights[i].smooth)
-						o.normalInvertShader:send("lightAngle", math.pi - o.lights[i].angle / 2.0)
-						o.normalInvertShader:send("lightDirection", o.lights[i].direction)
-						love.graphics.setShader(o.normalInvertShader)
-					else
-						o.normalShader:send('screenResolution', {love.graphics.getWidth(), love.graphics.getHeight()})
-						o.normalShader:send('lightColor', {o.lights[i].red / 255.0, o.lights[i].green / 255.0, o.lights[i].blue / 255.0})
-						o.normalShader:send('lightPosition',{o.lights[i].x, o.lights[i].y, o.lights[i].z / 255.0})
-						o.normalShader:send('lightRange',{o.lights[i].range})
-						o.normalShader:send("lightSmooth", o.lights[i].smooth)
-						o.normalShader:send("lightAngle", math.pi - o.lights[i].angle / 2.0)
-						o.normalShader:send("lightDirection", o.lights[i].direction)
-						love.graphics.setShader(o.normalShader)
-					end
-					love.graphics.draw(o.normalMap, LOVE_LIGHT_TRANSLATE_X, LOVE_LIGHT_TRANSLATE_Y)
-				end
-			end
-
-			love.graphics.setShader()
-			love.graphics.setCanvas(o.pixelShadow)
-			love.graphics.clear(255, 255, 255)
-			love.graphics.setBlendMode("alpha")
-			love.graphics.draw(o.pixelShadow2, LOVE_LIGHT_TRANSLATE_X, LOVE_LIGHT_TRANSLATE_Y)
-			love.graphics.setBlendMode("add")
-			love.graphics.setColor({o.ambient[1], o.ambient[2], o.ambient[3]})
-			love.graphics.rectangle("fill", LOVE_LIGHT_TRANSLATE_X, LOVE_LIGHT_TRANSLATE_Y, love.graphics.getWidth(), love.graphics.getHeight())
-			love.graphics.setBlendMode("alpha")
+			o.updateNormalMap()
 		end
 
 		if o.optionGlow and o.isGlow then
