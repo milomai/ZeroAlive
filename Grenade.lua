@@ -2,7 +2,7 @@ Grenade = class("Grenade", {
     range = 100,
     explosiveDelay = 3,
     size = 3,
-    linearDamping = 4,
+    linearDamping = 5,
     })
 
 function Grenade:init(physics, posX, posY)
@@ -26,23 +26,40 @@ function Grenade:update(dt)
   if self.explosiveDelay <= 0 then
     self:explosive()
   end
+  
+  if self.ps then
+    self.ps:update(dt)
+    if self.removeRemainTime <= 0 then
+      self.removed = true
+    end
+    self.removeRemainTime = self.removeRemainTime - dt
+  end
 end
 
 function Grenade:draw()
+  if self.removed then return end
+  
   love.graphics.push("all")
-  love.graphics.setColor(0, 0, 255, 255)
-  love.graphics.circle('fill', self.pos.x, self.pos.y, self.size, 6)
+  if self.ps then
+    love.graphics.draw(self.ps, self.pos.x, self.pos.y)
+  else
+    love.graphics.setColor(0, 0, 255, 255)
+    love.graphics.circle('fill', self.pos.x, self.pos.y, self.size, 6)
+  end
   love.graphics.pop()
   
   if self.debug then
     love.graphics.push("all")
+    --[[
     for j, hit in ipairs(hits) do
       for i, pos in ipairs(hit) do
         love.graphics.print(pos.index, pos.x, pos.y)
         love.graphics.setLineWidth(1)
         love.graphics.line(hit.pos.x, hit.pos.y, pos.x, pos.y)
       end
-    end
+    end]]
+    
+    love.graphics.circle("line",self.pos.x, self.pos.y, self.range)
     love.graphics.pop()
   end
 end
@@ -79,7 +96,12 @@ function Grenade:explosive()
       hit:die()
     end
   end
-  self.removed = true
+  
+  if not self.ps then
+    local image = love.graphics.newImage('res/img/plus.png')
+    self.ps = getPS('res/particle/Explosive', image)
+    self.removeRemainTime = self.ps:getEmitterLifetime()+math.max(self.ps:getParticleLifetime())
+  end
 end
 
 function Grenade:throw(targetX, targetY)
