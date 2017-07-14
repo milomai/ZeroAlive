@@ -73,6 +73,13 @@ function love.keypressed(key, isRepeat)
   if key == 'escape' then
     world.pause = not world.pause
   end
+  
+  if key == 'g' then
+    local x, y = world:mousePos()
+    local grenade = Grenade:new(world.physics, x, y)
+    world:add(grenade)
+    grenade:explosive()
+  end
 end
 
 function love.resize( w, h )
