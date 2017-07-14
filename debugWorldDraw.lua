@@ -76,10 +76,10 @@ local function debugWorldDraw(world,topLeft_x,topLeft_y,width,height)
 			love.graphics.line(x1,y1,x2,y2)
 		else
 			if (x1) then
-				love.graphics.point(x1,y1)
+				love.graphics.points(x1,y1)
 			end
 			if (x2) then
-				love.graphics.point(x2,y2)
+				love.graphics.points(x2,y2)
 			end
 		end
 	end
@@ -90,10 +90,10 @@ local function debugWorldDraw(world,topLeft_x,topLeft_y,width,height)
 	for i=1,#contacts do
 		local x1,y1,x2,y2 = contacts[i]:getPositions()
 		if (x1) then
-			love.graphics.point(x1,y1)
+			love.graphics.points(x1,y1)
 		end
 		if (x2) then
-			love.graphics.point(x2,y2)
+			love.graphics.points(x2,y2)
 		end
 	end
 end
