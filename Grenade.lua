@@ -1,18 +1,38 @@
 Grenade = class("Grenade", {
     range = 100,
+    explosiveDelay = 3,
+    size = 3,
+    linearDamping = 4,
     })
 
 function Grenade:init(physics, posX, posY)
   self.pos = {x = posX, y = posY}
   self.physics = physics
-  self.coolDown = 3
+  self.shape = love.physics.newCircleShape(self.size)
+  self.body = love.physics.newBody(physics, posX, posY, "dynamic")
+  self.body:setLinearDamping(self.linearDamping)
+  self.fixture = love.physics.newFixture(self.body, self.shape)
+  self.body:setActive(false)
+  self.fixture:setUserData(self)
   --self.debug = {}
 end
 
 function Grenade:update(dt)
+  self.pos.x = self.body:getX()
+  self.pos.y = self.body:getY()
+  
+  self.explosiveDelay  = self.explosiveDelay - dt
+  if self.explosiveDelay <= 0 then
+    self:explosive()
+  end
 end
 
 function Grenade:draw()
+  love.graphics.push("all")
+  love.graphics.setColor(0, 0, 255, 255)
+  love.graphics.circle('fill', self.pos.x, self.pos.y, self.size, 6)
+  love.graphics.pop()
+  
   if self.debug then
     love.graphics.push("all")
     for j, hit in ipairs(hits) do
@@ -58,4 +78,13 @@ function Grenade:explosive()
       hit:die()
     end
   end
+  self.removed = true
+end
+
+function Grenade:throw(targetX, targetY)
+  local force = 30
+  local angle = math.angle(self.pos.x, self.pos.y, targetX, targetY)
+  local dx = force * math.cos(angle)
+  local dy = force * math.sin(angle)
+  self.body:applyLinearImpulse(dx, dy)
 end
