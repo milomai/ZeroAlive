@@ -12,6 +12,7 @@ require('Player')
 require('Bullet')
 require('Enemy')
 require('Map')
+require('Grenade')
 
 
 local mouse = {x = 0, y = 0}
@@ -76,9 +77,9 @@ function love.keypressed(key, isRepeat)
   
   if key == 'g' then
     local x, y = world:mousePos()
-    local grenade = Grenade:new(world.physics, x, y)
+    local grenade = Grenade:new(world.physics, player.pos.x, player.pos.y)
     world:add(grenade)
-    grenade:explosive()
+    grenade:throw(x, y)
   end
 end
 
