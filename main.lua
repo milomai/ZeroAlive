@@ -1,3 +1,9 @@
+RAILGUN_GROUP = {
+  player  = 1,
+  enemy   = 2,
+  bullet  = 3,
+}
+
 require('ulits')
 
 class = require('30log')
