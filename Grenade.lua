@@ -1,13 +1,61 @@
-Grenade = class("Grenade", {})
+Grenade = class("Grenade", {
+    range = 100,
+    })
 
-function Grenade:init()
+function Grenade:init(physics, posX, posY)
+  self.pos = {x = posX, y = posY}
+  self.physics = physics
+  self.coolDown = 3
+  --self.debug = {}
 end
 
 function Grenade:update(dt)
 end
 
 function Grenade:draw()
+  if self.debug then
+    love.graphics.push("all")
+    for j, hit in ipairs(hits) do
+      for i, pos in ipairs(hit) do
+        love.graphics.print(pos.index, pos.x, pos.y)
+        love.graphics.setLineWidth(1)
+        love.graphics.line(hit.pos.x, hit.pos.y, pos.x, pos.y)
+      end
+    end
+    love.graphics.pop()
+  end
+end
+
+local hit --用来记录一条射线碰到的最近的物体
+
+local function rayCastCallback(fixture, posX, posY, xn, yn, fraction)
+  if fixture:getGroupIndex() == RAILGUN_GROUP.enemy then
+    local enemy = fixture:getUserData()
+    hit = enemy
+  else 
+    hit = nil --如果最近的物体不是敌人，就置空
+  end
+  return fraction --返回当前碰到的物体的系数，以保证接下来碰撞到的物体一定是比现在的离爆炸点更近
 end
 
 function Grenade:explosive()
+  self.disable = true
+  local startPos = self.pos
+  local rayCount = 128
+  local deltaAngle = math.pi*2/rayCount
+  local angle = 0
+  local range = self.range
+  if self.debug then
+    self.debug.rays = {}
+  end
+  for num = 1, rayCount do
+    local endPos = {}
+    endPos.y = startPos.y + math.sin(deltaAngle*num)*range
+    endPos.x = startPos.x + math.cos(deltaAngle*num)*range
+    hit = nil
+    self.physics:rayCast(startPos.x, startPos.y, endPos.x, endPos.y, rayCastCallback)
+    if hit then
+      hit:die()
+    end
+  end
 end
