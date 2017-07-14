@@ -18,6 +18,7 @@ function Player:init()
   self.fixture = love.physics.newFixture(self.body, self.shape)
   self.body:setActive(false)
   self.fixture:setUserData(self)
+  self.fixture:setGroupIndex(RAILGUN_GROUP.player)
   self.image = love.graphics.newImage("res/img/player.png")
   self.tile = {}
   self.light = {

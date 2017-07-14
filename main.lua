@@ -1,5 +1,5 @@
 RAILGUN_GROUP = {
-  player  = 1,
+  player  = -1,
   enemy   = 2,
   bullet  = 3,
 }
