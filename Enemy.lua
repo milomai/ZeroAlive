@@ -92,7 +92,6 @@ function Enemy:debugDraw()
 end
 
 function Enemy:die()
-  world.enemyCount = world.enemyCount - 1
   if not self.alive then return end
   world.enemyCount = world.enemyCount - 1
   self.alive = false
