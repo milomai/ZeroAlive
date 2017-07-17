@@ -15,6 +15,7 @@ function Grenade:init(physics, posX, posY)
   self.fixture:setGroupIndex(RAILGUN_GROUP.player)
   self.body:setActive(false)
   self.fixture:setUserData(self)
+  self.nextChangeTime = 1
   --self.debug = {}
 end
 
@@ -23,6 +24,10 @@ function Grenade:update(dt)
   self.pos.y = self.body:getY()
   
   self.explosiveDelay  = self.explosiveDelay - dt
+  if self.explosiveDelay <= self.nextChangeTime then
+    self.nextChangeTime = self.nextChangeTime - 0.1
+    self.flash = not self.flash
+  end
   if self.explosiveDelay <= 0 then
     self:explosive()
   end
@@ -43,7 +48,11 @@ function Grenade:draw()
   if self.ps then
     love.graphics.draw(self.ps, self.pos.x, self.pos.y)
   else
-    love.graphics.setColor(0, 0, 255, 255)
+    if self.flash then
+      love.graphics.setColor(200, 200, 255, 255)
+    else
+      love.graphics.setColor(0, 0, 255, 255)
+    end
     love.graphics.circle('fill', self.pos.x, self.pos.y, self.size, 6)
   end
   love.graphics.pop()
@@ -57,7 +66,7 @@ function Grenade:draw()
         love.graphics.setLineWidth(1)
         love.graphics.line(hit.pos.x, hit.pos.y, pos.x, pos.y)
       end
-    end]]
+    end--]]
     
     love.graphics.circle("line",self.pos.x, self.pos.y, self.range)
     love.graphics.pop()
@@ -79,7 +88,7 @@ end
 function Grenade:explosive()
   self.disable = true
   local startPos = self.pos
-  local rayCount = 128
+  local rayCount = 256
   local deltaAngle = math.pi*2/rayCount
   local angle = 0
   local range = self.range
