@@ -50,6 +50,11 @@ function Enemy:moveOnPath(dt)
 end
 
 function Enemy:moveToTarget(dt)
+  if self.debug then
+    self:moveTo(self.target.pos, dt)
+    return
+  end
+  
   if not self.currentTile then self.currentTile = {} end
     
   -- 如果和目标在同一个tile上，直接向目标移动
