@@ -20,6 +20,7 @@ function Bullet:init(posX, posY, mouseX, mouseY, accuracy)
   self.body:setActive(false)
   self.fixture = love.physics.newFixture(self.body, self.shape)
   self.fixture:setUserData(self)
+  self.fixture:setCategory(RAILGUN_GROUP.bullet)
 end
 
 function Bullet:deltaValue()

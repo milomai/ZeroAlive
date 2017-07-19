@@ -8,7 +8,7 @@ function Enemy:init(posX, posY)
   self.fixture = love.physics.newFixture(self.body, self.shape)
   self.body:setActive(false)
   self.fixture:setUserData(self)
-  self.fixture:setGroupIndex(RAILGUN_GROUP.enemy)
+  self.fixture:setCategory(RAILGUN_GROUP.enemy)
 end
 
 function Enemy:draw()
