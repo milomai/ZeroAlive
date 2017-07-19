@@ -10,9 +10,11 @@ function Grenade:init(physics, posX, posY)
   self.physics = physics
   self.shape = love.physics.newCircleShape(self.size)
   self.body = love.physics.newBody(physics, posX, posY, "dynamic")
+  self.body:setBullet(true)
   self.body:setLinearDamping(self.linearDamping)
   self.fixture = love.physics.newFixture(self.body, self.shape)
   self.fixture:setCategory(RAILGUN_GROUP.grenade)
+  self.fixture:setMask(RAILGUN_GROUP.player)
   self.fixture:setUserData(self)
   self.nextChangeTime = 1
   self.effectObjects = {}
