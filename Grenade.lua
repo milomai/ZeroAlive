@@ -57,7 +57,7 @@ function Grenade:update(dt)
   
   --向传感器碰到的物体发出射线
   for _, object in ipairs(self.effectObjects) do
-    if class.isInstance(object, Enemy) then
+    if object:instanceOf(Enemy) then
       if not object.pos then
         print("error!!")
       else 
