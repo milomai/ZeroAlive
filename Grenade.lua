@@ -16,7 +16,15 @@ function Grenade:init(physics, posX, posY)
   self.body:setActive(false)
   self.fixture:setUserData(self)
   self.nextChangeTime = 1
+  self.effectObjects = {}
   --self.debug = {}
+end
+
+local hit --用来记录一条射线碰到的最近的物体
+
+local function rayCastCallback(fixture, posX, posY, xn, yn, fraction)
+  hit = fixture:getUserData()
+  return fraction
 end
 
 function Grenade:update(dt)
@@ -38,6 +46,27 @@ function Grenade:update(dt)
       self.removed = true
     end
     self.removeRemainTime = self.removeRemainTime - dt
+  end
+  
+  --不清楚什么时候会为空，但是遇到过pos为空闪退的情况
+  if not self.pos then 
+    print("error!!!")
+    return 
+  end
+  
+  --向传感器碰到的物体发出射线
+  for _, object in ipairs(self.effectObjects) do
+    if class.isInstance(object, Enemy) then
+      if not object.pos then
+        print("error!!")
+      else 
+        self.physics:rayCast(self.pos.x, self.pos.y, object.pos.x, object.pos.y, rayCastCallback)
+        if hit == object then
+          hit:die()
+          hit = nil
+        end
+      end
+    end
   end
 end
 
@@ -73,18 +102,14 @@ function Grenade:draw()
   end
 end
 
-local hit --用来记录一条射线碰到的最近的物体
-
-local function rayCastCallback(fixture, posX, posY, xn, yn, fraction)
-  if fixture:getGroupIndex() == RAILGUN_GROUP.enemy then
-    local enemy = fixture:getUserData()
-    hit = enemy
-  else 
-    hit = nil --如果最近的物体不是敌人，就置空
-  end
-  return fraction --返回当前碰到的物体的系数，以保证接下来碰撞到的物体一定是比现在的离爆炸点更近
-end
-
+--[[
+爆炸效果实现原理：
+1、在爆炸位置生成一个圆形传感器
+2、检测传感器碰到的物体
+3、向检测到的物体发出一条射线
+4、通过射线检查爆炸位置和物体间是否有障碍物
+5、没有障碍物就把目标炸掉
+]]
 function Grenade:explosive()
   if self.disable then return end
   self.disable = true
@@ -93,19 +118,15 @@ function Grenade:explosive()
   local deltaAngle = math.pi*2/rayCount
   local angle = 0
   local range = self.range
-  if self.debug then
-    self.debug.rays = {}
-  end
-  for num = 1, rayCount do
-    local endPos = {}
-    endPos.y = startPos.y + math.sin(deltaAngle*num)*range
-    endPos.x = startPos.x + math.cos(deltaAngle*num)*range
-    hit = nil
-    self.physics:rayCast(startPos.x, startPos.y, endPos.x, endPos.y, rayCastCallback)
-    if hit then
-      hit:die()
-    end
-  end
+  
+  --生成传感器（碰撞检测回调在 World.lua 中）
+  self.explosiveShape = love.physics.newCircleShape(self.range)
+  self.explosiveBody = love.physics.newBody(self.physics, self.pos.x, self.pos.y, "dynamic")
+  self.explosiveFixture = love.physics.newFixture(self.explosiveBody, self.explosiveShape)
+  self.explosiveFixture:setUserData(self)
+  self.explosiveFixture:setSensor(true)
+  self.explosiveFixture:setMask(RAILGUN_GROUP.wall, RAILGUN_GROUP.bullet, RAILGUN_GROUP.effect, RAILGUN_GROUP.grenade)
+  self.explosiveFixture:setCategory(RAILGUN_GROUP.effect)
   
   if not self.ps then
     local image = love.graphics.newImage('res/img/plus.png')
