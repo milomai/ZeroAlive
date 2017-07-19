@@ -2,17 +2,20 @@ require('Map')
 require "light/postshader"
 require "light/light"
 local box2DDebugDraw = require('debugWorldDraw')
-World = class("World")
+World = class("World", {
+    generateEnemy = true,
+  })
 
 --local frameIndex = 0
 
 local function instanceOfClass(aClass, object1, object2)
-  if class.isInstance(object1, aClass) then
+  if class.isInstance(object1) and object1:instanceOf(aClass) then
     return object1
   end
-  if class.isInstance(object2, aClass) then
+  if class.isInstance(object2) and object2:instanceOf(aClass) then
     return object2
   end
+  return nil
 end
 
 local function beginContact(a, b, coll)
@@ -72,7 +75,6 @@ function World:init(option)
 
   self.focus = {x = self.size.width/2, y = self.size.height/2}
   self.enemyCount = 0
-  self.generateEnemy = false
 end
 
 function World:initLight()
