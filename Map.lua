@@ -165,7 +165,7 @@ end
 
 function Map:update(dt)
   if self.findPathUsage > 0 then
-    print('usage:' .. self.findPathUsage)
+    --print('usage:' .. self.findPathUsage)
   end
   self.findPathUsage = 0
 end
