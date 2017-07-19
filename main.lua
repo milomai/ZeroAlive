@@ -1,7 +1,10 @@
 RAILGUN_GROUP = {
-  player  = -1,
-  enemy   = 2,
-  bullet  = 3,
+  player  = 2,
+  enemy   = 3,
+  bullet  = 4,
+  wall    = 5,
+  effect  = 6,
+  grenade = 7,
 }
 
 require('ulits')
