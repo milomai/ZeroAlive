@@ -86,6 +86,7 @@ local function rayCastCallback(fixture, posX, posY, xn, yn, fraction)
 end
 
 function Grenade:explosive()
+  if self.disable then return end
   self.disable = true
   local startPos = self.pos
   local rayCount = 256
