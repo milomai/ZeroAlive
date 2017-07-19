@@ -6,7 +6,6 @@ Player = class("Player",
    speed = 640,
    alive = true,
    hp = 100,
-   collidable = true,
    forceDraw = true,
    linearDamping = 16})
 
@@ -93,5 +92,4 @@ end
 function Player:die()
   self.alive = false
   self.removed = true
-  self.collidable = false
 end

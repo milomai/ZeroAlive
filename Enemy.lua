@@ -1,4 +1,4 @@
-Enemy = class("Enemy", {size = 8, collidable = true, speed = 180, alive = true, linearDamping = 8, damge = 5})
+Enemy = class("Enemy", {size = 8, speed = 180, alive = true, linearDamping = 8, damge = 0})
 
 function Enemy:init(posX, posY)
   self.pos = {}
@@ -100,7 +100,6 @@ function Enemy:die()
   if not self.alive then return end
   world.enemyCount = world.enemyCount - 1
   self.alive = false
-  self.collidable = false
   if not self.diePS then
     local image = love.graphics.newImage('res/img/circle.png')
     self.diePS = getPS('res/particle/Blood', image)

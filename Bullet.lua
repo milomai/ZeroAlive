@@ -1,4 +1,4 @@
-Bullet = class("Bullet", {angle = 0, speed = 800, collidable = true})
+Bullet = class("Bullet", {angle = 0, speed = 800})
 
 trackImage = gradient({{255,255,255,255},{255,255,255,0}})
 
