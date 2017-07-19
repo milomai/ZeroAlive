@@ -16,17 +16,30 @@ local function instanceOfClass(aClass, object1, object2)
 end
 
 local function beginContact(a, b, coll)
-  local bullet, player, enemy
+  local bullet, player, enemy, explosive
   bullet = instanceOfClass(Bullet, a:getUserData(), b:getUserData())
   player = instanceOfClass(Player, a:getUserData(), b:getUserData())
   enemy = instanceOfClass(Enemy, a:getUserData(), b:getUserData())
+  explosive =  (a:getCategory() == RAILGUN_GROUP.effect and a) or (b:getCategory() == RAILGUN_GROUP.effect and b)
+  
+  if explosive then
+    local grenade = explosive:getUserData()
+    local other = ((a == explosive and b) or a)
+    other = other:getUserData()
+    if other then
+      table.insert(grenade.effectObjects, other)
+    end
+  end
+  
+  --子弹碰到任何物体都会消失
   if bullet and not player then bullet.removed = true end
   
+  --怪物被子弹打中就死
   if bullet and enemy and enemy.alive then
-    bullet.removed = true
     enemy:die()
   end
   
+  --怪物碰到玩家就会攻击
   if enemy and player and enemy.alive and player.alive then
     enemy:attack(player)
   end
