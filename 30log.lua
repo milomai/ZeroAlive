@@ -77,6 +77,7 @@ end
 baseMt = {
 	__call = function (self,...) return self:new(...) end,
 	
+  --[[
 	__tostring = function(self,...)
 		if _instances[self] then
 			return ("instance of '%s' (%s)"):format(rawget(self.class,'name') 
@@ -86,7 +87,7 @@ baseMt = {
 							and ("class '%s' (%s)"):format(rawget(self,'name')
 							or '?',
 					_classes[self]) or self
-	end
+	end]]
 }
 
 _classes[baseMt] = tostring(baseMt)
