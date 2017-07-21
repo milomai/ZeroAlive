@@ -75,6 +75,16 @@ function World:init(option)
 
   self.focus = {x = self.size.width/2, y = self.size.height/2}
   self.enemyCount = 0
+  
+  self:initPlayer()
+end
+
+function World:initPlayer()
+  self.player = Player:new()
+  self.player.weapon = Gun:new(self.player)
+  
+  self:add(self.player)
+  self.focus = self.player.pos
 end
 
 function World:initLight()
