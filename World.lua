@@ -9,10 +9,10 @@ World = class("World", {
 --local frameIndex = 0
 
 local function instanceOfClass(aClass, object1, object2)
-  if class.isInstance(object1) and object1:instanceOf(aClass) then
+  if isInstanceOfClass(object1, aClass) then
     return object1
   end
-  if class.isInstance(object2) and object2:instanceOf(aClass) then
+  if isInstanceOfClass(object2, aClass) then
     return object2
   end
   return nil

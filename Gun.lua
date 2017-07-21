@@ -9,7 +9,7 @@ Gun = class("Gun", {
 
 -- owner 必须是 GameObject
 function Gun:init(owner)
-  if class.isInstance(owner) and owner:instanceOf(GameObject) then
+  if isInstanceOfClass(owner, GameObject) then
     self.owner = owner
   end
   

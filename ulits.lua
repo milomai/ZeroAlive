@@ -1,6 +1,10 @@
 -- Returns the angle between two points.
 function math.angle(x1,y1, x2,y2) return math.atan2(y2-y1, x2-x1) end
 
+function isInstanceOfClass(instance, aClass)
+  return class.isInstance(instance) and instance:instanceOf(aClass)
+end
+
 -- 更新射线在屏幕边缘的位置
 function updateEdgePoint()
   mouse.x, mouse.y = love.mouse.getPosition()
