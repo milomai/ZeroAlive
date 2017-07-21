@@ -4,7 +4,6 @@ function Enemy:init(posX, posY)
   self.super.init(self, posX, posY)
   self.physic.body:setLinearDamping(self.linearDamping)
   self.physic.fixture:setCategory(RAILGUN_GROUP.enemy)
-  self.debug = true
 end
 
 function Enemy:draw()

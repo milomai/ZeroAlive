@@ -1,4 +1,4 @@
-Bullet = GameObject:extend("Bullet", {angle = 0, speed = 800, size = 1})
+Bullet = GameObject:extend("Bullet", {angle = 0, speed = 3, size = 1})
 
 local trackImage = gradient({{255,255,255,255},{255,255,255,0}})
 
@@ -20,8 +20,6 @@ end
 function Bullet:deltaValue()
   self.dx = self.speed * math.cos(self.angle)
   self.dy = self.speed * math.sin(self.angle)
-  self.pos.x = self.pos.x + (player.size+1) * math.cos(self.angle)
-  self.pos.y = self.pos.y + (player.size+1) * math.sin(self.angle)
 end
 
 function Bullet:debugDraw()
