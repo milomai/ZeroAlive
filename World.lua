@@ -121,7 +121,7 @@ local function removeUnusedObjects()
   end
   for i = #indexes, 1, -1 do
     local object = table.remove(_objects, indexes[i])
-    if object.body then object.body:destroy() end
+    if object.physic then object.physic.body:destroy() end
     --[[
     if object == nil then
       print('['..frameIndex..']'..'out of range')

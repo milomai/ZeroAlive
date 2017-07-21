@@ -1,5 +1,5 @@
 require('Gun')
-Player = class("Player", 
+Player = GameObject:extend("Player", 
   {playerName = "New Player",
    pos = {x = 50, y = 50},
    size = 10,
@@ -10,14 +10,10 @@ Player = class("Player",
    linearDamping = 16})
 
 function Player:init()
+  self.super.init(self)
   self.slash = self.speed/2^0.5
-  self.shape = love.physics.newCircleShape(self.size)
-  self.body = love.physics.newBody(world.physics, self.pos.x, self.pos.y, "dynamic")
-  self.body:setLinearDamping(self.linearDamping)
-  self.fixture = love.physics.newFixture(self.body, self.shape)
-  self.body:setActive(false)
-  self.fixture:setUserData(self)
-  self.fixture:setCategory(RAILGUN_GROUP.player)
+  self.physic.body:setLinearDamping(self.linearDamping)
+  self.physic.fixture:setCategory(RAILGUN_GROUP.player)
   self.image = love.graphics.newImage("res/img/player.png")
   self.tile = {}
   self.light = {
@@ -52,22 +48,21 @@ function Player:handleInput(dt)
   if love.keyboard.isDown('d') then downKeys = downKeys..'d' end
   
   --local dx, dy = 0, 0
-  if downKeys == 's'  then self.body:applyLinearImpulse(0, self.speed*dt) end
-  if downKeys == 'w'  then self.body:applyLinearImpulse(0, -self.speed*dt) end
-  if downKeys == 'a'  then self.body:applyLinearImpulse(-self.speed*dt, 0) end
-  if downKeys == 'd'  then self.body:applyLinearImpulse(self.speed*dt, 0) end
-  if downKeys == 'wa' then self.body:applyLinearImpulse(-self.slash*dt, -self.slash*dt) end
-  if downKeys == 'wd' then self.body:applyLinearImpulse(self.slash*dt, -self.slash*dt) end
-  if downKeys == 'sa' then self.body:applyLinearImpulse(-self.slash*dt, self.slash*dt) end
-  if downKeys == 'sd' then self.body:applyLinearImpulse(self.slash*dt, self.slash*dt) end
+  if downKeys == 's'  then self.physic.body:applyLinearImpulse(0, self.speed*dt) end
+  if downKeys == 'w'  then self.physic.body:applyLinearImpulse(0, -self.speed*dt) end
+  if downKeys == 'a'  then self.physic.body:applyLinearImpulse(-self.speed*dt, 0) end
+  if downKeys == 'd'  then self.physic.body:applyLinearImpulse(self.speed*dt, 0) end
+  if downKeys == 'wa' then self.physic.body:applyLinearImpulse(-self.slash*dt, -self.slash*dt) end
+  if downKeys == 'wd' then self.physic.body:applyLinearImpulse(self.slash*dt, -self.slash*dt) end
+  if downKeys == 'sa' then self.physic.body:applyLinearImpulse(-self.slash*dt, self.slash*dt) end
+  if downKeys == 'sd' then self.physic.body:applyLinearImpulse(self.slash*dt, self.slash*dt) end
   
   --self.pos.x = self.pos.x + dx * dt
   --self.pos.y = self.pos.y + dy * dt
 end
 
 function Player:update(dt)
-  self.pos.x = self.body:getX()
-  self.pos.y = self.body:getY()
+  self.super.update(self, dt)
   local currentTile = {}
   currentTile = world.map:tileCoordinates(self.pos)
   if not (currentTile.x == self.tile.x) or not (currentTile.y == self.tile.y) then

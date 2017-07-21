@@ -1,4 +1,4 @@
-Grenade = class("Grenade", {
+Grenade = GameObject:extend("Grenade", {
     range = 100,
     explosiveDelay = 3,
     size = 3,
@@ -6,16 +6,11 @@ Grenade = class("Grenade", {
     })
 
 function Grenade:init(physics, posX, posY)
-  self.pos = {x = posX, y = posY}
-  self.physics = physics
-  self.shape = love.physics.newCircleShape(self.size)
-  self.body = love.physics.newBody(physics, posX, posY, "dynamic")
-  self.body:setBullet(true)
-  self.body:setLinearDamping(self.linearDamping)
-  self.fixture = love.physics.newFixture(self.body, self.shape)
-  self.fixture:setCategory(RAILGUN_GROUP.grenade)
-  self.fixture:setMask(RAILGUN_GROUP.player)
-  self.fixture:setUserData(self)
+  self.super.init(self, posX, posY)  
+  self.physic.body:setBullet(true)
+  self.physic.body:setLinearDamping(self.linearDamping)
+  self.physic.fixture:setCategory(RAILGUN_GROUP.grenade)
+  self.physic.fixture:setMask(RAILGUN_GROUP.player)
   self.nextChangeTime = 1
   self.effectObjects = {}
   --self.debug = {}
@@ -29,8 +24,7 @@ local function rayCastCallback(fixture, posX, posY, xn, yn, fraction)
 end
 
 function Grenade:update(dt)
-  self.pos.x = self.body:getX()
-  self.pos.y = self.body:getY()
+  self.super.update(self, dt)
   
   self.explosiveDelay  = self.explosiveDelay - dt
   if self.explosiveDelay <= self.nextChangeTime then
@@ -61,7 +55,7 @@ function Grenade:update(dt)
       if not object.pos then
         print("error!!")
       else 
-        self.physics:rayCast(self.pos.x, self.pos.y, object.pos.x, object.pos.y, rayCastCallback)
+        world.physics:rayCast(self.pos.x, self.pos.y, object.pos.x, object.pos.y, rayCastCallback)
         if hit == object then
           hit:die()
           hit = nil
@@ -122,7 +116,7 @@ function Grenade:explosive()
   
   --生成传感器（碰撞检测回调在 World.lua 中）
   self.explosiveShape = love.physics.newCircleShape(self.range)
-  self.explosiveBody = love.physics.newBody(self.physics, self.pos.x, self.pos.y, "dynamic")
+  self.explosiveBody = love.physics.newBody(world.physics, self.pos.x, self.pos.y, "dynamic")
   self.explosiveFixture = love.physics.newFixture(self.explosiveBody, self.explosiveShape)
   self.explosiveFixture:setUserData(self)
   self.explosiveFixture:setSensor(true)
@@ -141,5 +135,5 @@ function Grenade:throw(targetX, targetY)
   local angle = math.angle(self.pos.x, self.pos.y, targetX, targetY)
   local dx = force * math.cos(angle)
   local dy = force * math.sin(angle)
-  self.body:applyLinearImpulse(dx, dy)
+  self.physic.body:applyLinearImpulse(dx, dy)
 end

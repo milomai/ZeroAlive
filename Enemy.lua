@@ -1,14 +1,10 @@
-Enemy = class("Enemy", {size = 8, speed = 180, alive = true, linearDamping = 8, damge = 0})
+Enemy = GameObject:extend("Enemy", {size = 8, speed = 120, alive = true, linearDamping = 8, damge = 0})
 
 function Enemy:init(posX, posY)
-  self.pos = {}
-  self.shape = love.physics.newCircleShape(self.size)
-  self.body = love.physics.newBody(world.physics, posX, posY, "dynamic")
-  self.body:setLinearDamping(self.linearDamping)
-  self.fixture = love.physics.newFixture(self.body, self.shape)
-  self.body:setActive(false)
-  self.fixture:setUserData(self)
-  self.fixture:setCategory(RAILGUN_GROUP.enemy)
+  self.super.init(self, posX, posY)
+  self.physic.body:setLinearDamping(self.linearDamping)
+  self.physic.fixture:setCategory(RAILGUN_GROUP.enemy)
+  self.debug = true
 end
 
 function Enemy:draw()
@@ -28,7 +24,7 @@ function Enemy:moveTo(pos, dt)
   local angle = math.angle(self.pos.x, self.pos.y, pos.x, pos.y)
   local dx = self.speed * math.cos(angle) * dt
   local dy = self.speed * math.sin(angle) * dt
-  self.body:applyLinearImpulse(dx, dy)
+  self.physic.body:applyLinearImpulse(dx, dy)
 end
 
 function Enemy:findPathTo(target)
@@ -73,8 +69,7 @@ function Enemy:moveToTarget(dt)
 end
 
 function Enemy:update(dt)
-  self.pos.x = self.body:getX()
-  self.pos.y = self.body:getY()
+  self.super.update(self, dt)
   if self.alive then
     self:moveToTarget(dt)
   elseif self.diePS then
