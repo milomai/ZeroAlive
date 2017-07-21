@@ -7,7 +7,12 @@ Gun = class("Gun", {
     maxAmmo = 30,
     reloadTime = 3,})
 
-function Gun:init()
+-- owner 必须是 GameObject
+function Gun:init(owner)
+  if class.isInstance(owner) and owner:instanceOf(GameObject) then
+    self.owner = owner
+  end
+  
   --开火效果
   local image = love.graphics.newImage('res/img/circle.png')
   self.ps = getPS('res/particle/Fire', image)
@@ -26,7 +31,7 @@ end
 function Gun:shot(dt)
   local x, y = world:mousePos()
   while self.fireTime < love.timer.getTime() and self.ammo > 0 do
-    local bullet = Bullet:new(player.pos.x, player.pos.y, x, y, self.accuracy)
+    local bullet = Bullet:new(self.owner.pos.x, self.owner.pos.y, x, y, self.accuracy)
     world:add(bullet)
     self.ammo = self.ammo - 1
     self.fireTime = self.fireTime + 1/(self.rpm/60)
@@ -35,14 +40,6 @@ end
 
 function Gun:stop()
   self.isFire = false
-end
-
-function Gun:handleInput()
-  if love.mouse.isDown(1) then
-    player.weapon:fire()
-  else
-    player.weapon:stop()
-  end
 end
 
 function Gun:reload()
@@ -70,6 +67,6 @@ end
 
 function Gun:draw()
   if self.isFire and self.ps and self.auto then
-    love.graphics.draw(self.ps, player.pos.x, player.pos.y)
+    love.graphics.draw(self.ps, self.owner.pos.x, self.owner.pos.y)
   end
 end

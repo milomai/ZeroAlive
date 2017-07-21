@@ -37,8 +37,10 @@ function Player:draw()
 end
 
 function Player:handleInput(dt)
-  if self.weapon and type(self.weapon.handleInput) == 'function' then
-    self.weapon:handleInput()
+  if love.mouse.isDown(1) then
+    self.weapon:fire()
+  else
+    self.weapon:stop()
   end
   
   local downKeys = ''
