@@ -210,6 +210,10 @@ local EnemyGenerateRate = 1
 local remainTime = 0
 
 function World:update(dt)
+  if world.debug then
+    world.debug.findPathUsage = 0
+  end
+  
   if self.pause then
     return
   end
@@ -244,6 +248,12 @@ function World:update(dt)
   
   if lightMouse then
     lightMouse.setPosition(love.mouse.getX(), love.mouse.getY())
+  end
+  
+  if world.debug then
+    if world.debug.findPathUsage > 0 then
+      print ("find path usage:" .. 1/world.debug.findPathUsage)
+    end
   end
 end
 

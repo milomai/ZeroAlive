@@ -28,7 +28,14 @@ function Enemy:moveTo(pos, dt)
 end
 
 function Enemy:findPathTo(target)
+  local startTime
+  if world.debug then
+    startTime = love.timer.getTime()
+  end
   self.path = world.map:findPath(self.pos, target)
+  if world.debug then
+    world.debug.findPathUsage = world.debug.findPathUsage + (love.timer.getTime() - startTime)
+  end
 end
 
 function Enemy:moveOnPath(dt)
