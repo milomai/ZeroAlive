@@ -10,6 +10,7 @@ RAILGUN_GROUP = {
 require('ulits')
 
 class = require('30log')
+require('GameObject')
 require('World')
 require('Player')
 require('Bullet')
