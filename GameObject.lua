@@ -2,7 +2,8 @@ GameObject = class("GameObject",
   {
     size = 10,
     pos = {x = 0, y = 0},
-    physic = {}
+    physic = {},
+    debug = false,        --Debug 开关
   })
 
 function GameObject:init(posX, posY)
