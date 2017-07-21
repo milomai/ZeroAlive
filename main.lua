@@ -40,7 +40,7 @@ end
 local num = 0
 
 function love.update(dt)
-  
+  local player = world.player
   if player.alive then
     world:update(dt)
   end
@@ -55,6 +55,7 @@ function love.draw()
   world:draw()
   love.graphics.pop()
   
+  local player = world.player
   --love.graphics.print(love.timer.getFPS())
   --love.graphics.print(string.format("%.1f", player.pos.x)..','..string.format("%.1f", player.pos.y))
   --drawAimLine()

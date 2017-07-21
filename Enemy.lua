@@ -77,7 +77,7 @@ end
 
 function Enemy:update(dt)
   self.super.update(self, dt)
-  if self.alive then
+  if self.alive and self.target then
     self:moveToTarget(dt)
   elseif self.diePS then
     self.diePS:update(dt)
@@ -123,6 +123,6 @@ function Enemy.Generate(posX, posY, size)
     pos.y = world.size.height * love.math.random()
   end
   local enemy = Enemy:new(pos.x, pos.y)
-  enemy.target = player
+  enemy.target = world.player
   world:add(enemy)
 end
