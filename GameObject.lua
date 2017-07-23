@@ -23,4 +23,10 @@ function GameObject:update(dt)
 end
   
 function GameObject:draw()
+  if self.debug then
+    self:debugDraw()
+  end
+end
+
+function GameObject:debugDraw()
 end
