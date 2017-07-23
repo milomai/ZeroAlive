@@ -1,5 +1,6 @@
 local Grid = require ("jumper.grid") -- The grid class
 local Pathfinder = require ("jumper.pathfinder") -- The pathfinder lass
+require("PathFinder")
 
 Map = class("Map", {forceDraw = true, solid = true})
 
@@ -11,7 +12,6 @@ function Map:init(file, physics, light)
   self:loadImages(self.tileMap.tilesets)
   self:loadTiles()
   self:buildPathFinder()
-  self.findPathUsage = 0
 end
 
 function Map:loadImages(tilesets)
@@ -72,8 +72,7 @@ function Map:loadTiles()
 end
 
 function Map:buildPathFinder()
-  local grid = Grid(self.walkableMap)
-  self.pathFinder = Pathfinder(grid, 'ASTAR', 0)
+  self.pathFinder = PathFinder(self.walkableMap)
 end
 
 -- 将游戏坐标转换为tile坐标
@@ -102,38 +101,10 @@ function Map:worldCoordinates(tilePos)
   }
 end
 
-function Map:improvePath(path)
-  if #path < 3 or not path then return path end
-  
-  local improvedPath = {}
-  local direction = nil
-  for index = 1, #path - 1 do
-    local nextDirection = {}
-    nextDirection.x = path[index].x - path[index+1].x
-    nextDirection.y = path[index].y - path[index+1].y
-    if not direction then
-      table.insert(improvedPath, path[index])
-    else 
-      if direction.x ~= nextDirection.x or direction.y ~= nextDirection.y then
-        table.insert(improvedPath, path[index])
-      end
-    end
-    direction = nextDirection
-  end
-  if not (improvedPath[#improvedPath].x == path[#path].x and improvedPath[#improvedPath].y == path[#path].y) then
-    table.insert(improvedPath, path[#path])
-  end
-  return improvedPath
-end
-
 function Map:findPath(from, to)
   local tileFrom = self:tileCoordinates(from)
   local tileTo = self:tileCoordinates(to)
-  local time = love.timer.getTime()
-	local path = self.pathFinder:getPath(tileFrom.x, tileFrom.y, tileTo.x, tileTo.y, false)
-  path = self:improvePath(path)
-  local usage = love.timer.getTime()-time
-  self.findPathUsage = self.findPathUsage + usage
+  local path = self.pathFinder:findPath(tileFrom.x, tileFrom.y, tileTo.x, tileTo.y)
   return path
 end
 
@@ -164,8 +135,5 @@ function Map:draw()
 end
 
 function Map:update(dt)
-  if self.findPathUsage > 0 then
-    --print('usage:' .. self.findPathUsage)
-  end
-  self.findPathUsage = 0
+
 end
