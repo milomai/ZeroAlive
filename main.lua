@@ -86,7 +86,7 @@ function love.keypressed(key, isRepeat)
   
   if key == 'g' then
     local x, y = world:mousePos()
-    local grenade = Grenade:new(world.physics, player.pos.x, player.pos.y)
+    local grenade = Grenade:new(world.physics, world.player.pos.x, world.player.pos.y)
     world:add(grenade)
     grenade:throw(x, y)
   end
