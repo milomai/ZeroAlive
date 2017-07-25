@@ -93,7 +93,7 @@ end
 
 -- 将地图坐标转换为游戏坐标
 -- @param tilePos 地图坐标 {x= , y= }
--- @return 地图坐标 {x= , y= }
+-- @return 地图坐标中心点对应的游戏坐标 {x= , y= }
 function Map:worldCoordinates(tilePos)
   return {
     x = (tilePos.x-0.5)*self.tileMap.tilewidth, 
