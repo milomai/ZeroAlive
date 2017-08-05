@@ -70,6 +70,7 @@ function Enemy:moveToTarget(dt)
     function (fixture, posX, posY, xn, yn, fraction) 
       if fixture:getCategory() == RAILGUN_GROUP.wall then
         hasWall = true
+        return 0
       end
       return 1
     end)
