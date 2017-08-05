@@ -5,7 +5,7 @@ local Jumper = require ("jumper.pathfinder") -- The pathfinder lass
 
 function PathFinder:init(map)
   local grid = Grid(map)
-  self.pathFinder = Jumper(grid, 'ASTAR', 0)
+  self.pathFinder = Jumper(grid, 'JPS', 0)
 end
 
 function PathFinder:improvePath(path)

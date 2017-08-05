@@ -4,6 +4,7 @@ function Enemy:init(posX, posY)
   self.super.init(self, posX, posY)
   self.physic.body:setLinearDamping(self.linearDamping)
   self.physic.fixture:setCategory(RAILGUN_GROUP.enemy)
+  self.currentTile = {}
 end
 
 function Enemy:draw()
@@ -33,6 +34,7 @@ function Enemy:findPathTo(target)
   end
   self.path = world.map:findPath(self.pos, target)
   if world.debug then
+    world.debug.findPathCall = world.debug.findPathCall + 1
     world.debug.findPathUsage = world.debug.findPathUsage + (love.timer.getTime() - startTime)
   end
 end
@@ -40,6 +42,7 @@ end
 function Enemy:moveOnPath(dt)
   if not self.path or #self.path == 0 then return end
   local target = self.path[1]
+  self.currentTile = world.map:tileCoordinates(self.pos)
   if self.currentTile.x == target.x and self.currentTile.y == target.y then
     table.remove(self.path, 1)
     target = self.path[1]
@@ -57,21 +60,28 @@ function Enemy:moveToTarget(dt)
     return
   end
   
-  if not self.currentTile then self.currentTile = {} end
-    
-  -- 如果和目标在同一个tile上，直接向目标移动
-  self.currentTile = world.map:tileCoordinates(self.pos)
-  local target = {}
-  target = world.map:tileCoordinates(self.target.pos)
-  if self.currentTile.x == target.x and self.currentTile.y == target.y then
+  -- 如果和目标之间没有阻挡，直接向目标移动
+  local hasWall
+  world.physics:rayCast(
+    self.pos.x, 
+    self.pos.y, 
+    self.target.pos.x, 
+    self.target.pos.y, 
+    function (fixture, posX, posY, xn, yn, fraction) 
+      if fixture:getCategory() == RAILGUN_GROUP.wall then
+        hasWall = true
+      end
+      return 1
+    end)
+  if not hasWall then
     self:moveTo(self.target.pos, dt)
-  else
-    if self.target.tileChanged or not self.path then
-      startTime = love.timer.getTime()
-      self:findPathTo(self.target.pos)
-    end
-    self:moveOnPath(dt)
+    return
   end
+    
+  if self.target.tileChanged or not self.path then
+    self:findPathTo(self.target.pos)
+  end
+  self:moveOnPath(dt)
 end
 
 function Enemy:update(dt)
