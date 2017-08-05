@@ -16,13 +16,6 @@ function Grenade:init(physics, posX, posY)
   --self.debug = {}
 end
 
-local hit --用来记录一条射线碰到的最近的物体
-
-local function rayCastCallback(fixture, posX, posY, xn, yn, fraction)
-  hit = fixture:getUserData()
-  return fraction
-end
-
 function Grenade:update(dt)
   self.super.update(self, dt)
   
@@ -55,7 +48,16 @@ function Grenade:update(dt)
       if not object.pos then
         print("error!!")
       else 
-        world.physics:rayCast(self.pos.x, self.pos.y, object.pos.x, object.pos.y, rayCastCallback)
+        local hit --用来记录一条射线碰到的最近的物体
+        world.physics:rayCast(
+          self.pos.x, 
+          self.pos.y, 
+          object.pos.x, 
+          object.pos.y, 
+          function (fixture, posX, posY, xn, yn, fraction)
+            hit = fixture:getUserData()
+            return fraction
+          end)
         if hit == object then
           hit:die()
           hit = nil
