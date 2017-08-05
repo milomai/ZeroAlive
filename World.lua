@@ -222,6 +222,7 @@ local remainTime = 0
 function World:update(dt)
   if world.debug then
     world.debug.findPathUsage = 0
+    world.debug.findPathCall = 0
   end
   
   if self.pause then
@@ -261,8 +262,8 @@ function World:update(dt)
   end
   
   if world.debug then
-    if world.debug.findPathUsage > 0 then
-      print ("find path usage:" .. 1/world.debug.findPathUsage)
+    if world.debug.findPathUsage > 2/60 then
+      print ("find path usage:" .. world.debug.findPathUsage .. "(" .. world.debug.findPathCall .. " times)")
     end
   end
 end
