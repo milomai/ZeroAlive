@@ -5,7 +5,8 @@ Gun = class("Gun", {
     auto = true, 
     accuracy = 4*math.pi/180,
     maxAmmo = 30,
-    reloadTime = 3,})
+    reloadTime = 3,
+    muzzleVelocity = 3})
 
 -- owner 必须是 GameObject
 function Gun:init(owner)
@@ -29,10 +30,12 @@ function Gun:fire()
 end
 
 function Gun:shot(dt)
-  local x, y = world:mousePos()
   while self.fireTime < love.timer.getTime() and self.ammo > 0 do
-    local bullet = Bullet:new(self.owner.pos.x, self.owner.pos.y, x, y, self.accuracy)
+    local angle = math.angle(self.owner.pos.x, self.owner.pos.y, world:mousePos())
+    angle = angle + (love.math.random() - 0.5) * self.accuracy
+    local bullet = Bullet:new(self.owner.pos.x, self.owner.pos.y)
     world:add(bullet)
+    bullet:fly(self.muzzleVelocity, angle)
     self.ammo = self.ammo - 1
     self.fireTime = self.fireTime + 1/(self.rpm/60)
   end

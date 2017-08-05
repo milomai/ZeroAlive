@@ -1,4 +1,4 @@
-Bullet = GameObject:extend("Bullet", {angle = 0, speed = 3, size = 1})
+Bullet = GameObject:extend("Bullet", {size = 1})
 
 local trackImage = gradient({{255,255,255,255},{255,255,255,0}})
 
@@ -6,20 +6,16 @@ function Bullet:init()
   self.pos = {}
 end
 
-function Bullet:init(posX, posY, mouseX, mouseY, accuracy)
+function Bullet:init(posX, posY)
   self.super.init(self, posX, posY)
-  self.angle = math.angle(posX, posY, mouseX, mouseY)
-  self.angle = self.angle + (love.math.random() - 0.5) * accuracy
-  self:deltaValue()
   self.physic.body:setBullet(true)
-  self.physic.body:applyLinearImpulse(self.dx, self.dy)
   self.physic.fixture:setCategory(RAILGUN_GROUP.bullet)
   self.physic.fixture:setMask(RAILGUN_GROUP.player)
 end
 
-function Bullet:deltaValue()
-  self.dx = self.speed * math.cos(self.angle)
-  self.dy = self.speed * math.sin(self.angle)
+function Bullet:deltaValue(speed, angle)
+  self.dx = speed * math.cos(angle)
+  self.dy = speed * math.sin(angle)
 end
 
 function Bullet:debugDraw()
@@ -36,4 +32,10 @@ end
 
 function Bullet:update(dt)
   self.super.update(self, dt)
+end
+
+function Bullet:fly(speed, angle)
+  self.angle = angle
+  self:deltaValue(speed, angle)
+  self.physic.body:applyLinearImpulse(self.dx, self.dy)
 end
