@@ -1,4 +1,4 @@
-Bullet = GameObject:extend("Bullet", {size = 1})
+Bullet = GameObject:extend("Bullet", {size = 1, linearDamping = 1})
 
 local trackImage = gradient({{255,255,255,255},{255,255,255,0}})
 
@@ -9,6 +9,7 @@ end
 function Bullet:init(posX, posY)
   self.super.init(self, posX, posY)
   self.physic.body:setBullet(true)
+  self.physic.body:setLinearDamping(self.linearDamping)
   self.physic.fixture:setCategory(RAILGUN_GROUP.bullet)
   self.physic.fixture:setMask(RAILGUN_GROUP.player)
 end
@@ -27,11 +28,16 @@ function Bullet:debugDraw()
 end
 
 function Bullet:draw()
-  drawInRect(trackImage, self.pos.x, self.pos.y, 20, 1, math.pi + self.angle)
+  drawInRect(trackImage, self.pos.x, self.pos.y, self.speed/30, 1, math.pi + self.angle)
 end
 
 function Bullet:update(dt)
   self.super.update(self, dt)
+  local speedX, speedY = self.physic.body:getLinearVelocity()
+  self.speed = math.sqrt(speedX * speedX + speedY * speedY)
+  if self.speed  == 0 then
+    self.removed = true
+  end
 end
 
 function Bullet:fly(speed, angle)
