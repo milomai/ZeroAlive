@@ -35,7 +35,7 @@ local function beginContact(a, b, coll)
   end
   
   --怪物被子弹打中就死
-  if bullet and enemy and enemy.alive then
+  if bullet and bullet.speed > 240 and enemy and enemy.alive then
     enemy:die()
   end
   
