@@ -23,11 +23,12 @@ function Bullet:debugDraw()
   love.graphics.push('all')
   love.graphics.setPointSize(1)
   love.graphics.setColor(255, 0, 0, 255)
-  love.graphics.point(self.pos.x, self.pos.y)
+  love.graphics.points(self.pos.x, self.pos.y)
   love.graphics.pop()
 end
 
 function Bullet:draw()
+  self.super.draw(self)
   drawInRect(trackImage, self.pos.x, self.pos.y, self.speed/30, 1, math.pi + self.angle)
 end
 
