@@ -42,6 +42,7 @@ function Bullet:update(dt)
   local speedX, speedY = self.physic.body:getLinearVelocity()
   self.speed = math.sqrt(speedX * speedX + speedY * speedY)
   if self.speed  == 0 then
+  self.angle = math.atan2(speedY, speedX)
     self.removed = true
   end
 end
