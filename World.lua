@@ -34,9 +34,6 @@ local function beginContact(a, b, coll)
     end
   end
   
-  --子弹碰到任何物体都会消失
-  if bullet and not player then bullet.removed = true end
-  
   --怪物被子弹打中就死
   if bullet and enemy and enemy.alive then
     enemy:die()
