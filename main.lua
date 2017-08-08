@@ -23,18 +23,18 @@ local mouse = {x = 0, y = 0}
 local edgePoint = {x = 0, y = 0}
 
 function love.load(arg)
-  local debug = true
+  --local debugSwitch = true
   if arg[#arg] == "-debug" then 
     require("mobdebug").start() 
-    debug = true
+    debugSwitch = true
   end
-  
   love.graphics.setPointSize(2)
   world = World:create()
   world:init({mapPath = 'res/map/stage2'})
-  if debug then
+  if debugSwitch then
     world.debug = {}
   end
+  
 end
 
 local num = 0
