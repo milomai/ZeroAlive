@@ -2,12 +2,16 @@ Bullet = GameObject:extend("Bullet", {size = 1, linearDamping = 1})
 
 local trackImage = gradient({{255,255,255,255},{255,255,255,0}})
 
+local id = 1
+
 function Bullet:init()
   self.pos = {}
 end
 
 function Bullet:init(posX, posY)
   self.super.init(self, posX, posY)
+  id = id + 1
+  self.id = id
   self.physic.body:setBullet(true)
   self.physic.body:setLinearDamping(self.linearDamping)
   self.physic.fixture:setCategory(RAILGUN_GROUP.bullet)
@@ -24,6 +28,7 @@ function Bullet:debugDraw()
   love.graphics.setPointSize(1)
   love.graphics.setColor(255, 0, 0, 255)
   love.graphics.points(self.pos.x, self.pos.y)
+  love.graphics.print(self.id, self.pos.x, self.pos.y)
   love.graphics.pop()
 end
 
