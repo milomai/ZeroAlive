@@ -36,12 +36,42 @@ local function beginContact(a, b, coll)
   
   --怪物被子弹打中就死
   if bullet and bullet.speed > 240 and enemy and enemy.alive then
+    bullet.physic.body:setLinearDamping(100)
     enemy:die()
+    if world.debug then
+      print("bullet(" .. bullet.id .. ") kill " .. tostring(enemy) .. " at speed " .. bullet.speed)
+    end
   end
   
   --怪物碰到玩家就会攻击
   if enemy and player and enemy.alive and player.alive then
     enemy:attack(player)
+  end
+end
+
+local function endContact(a, b, coll)
+  local bullet, enemy
+  bullet = instanceOfClass(Bullet, a:getUserData(), b:getUserData())
+  enemy = instanceOfClass(Enemy, a:getUserData(), b:getUserData())
+  if bullet and enemy then
+    bullet.physic.body:setLinearDamping(bullet.linearDamping)
+    if world.debug and bullet.speed > 240 then
+      print("bullet(" .. bullet.id .. ") endContact " .. tostring(enemy) .. " at speed " .. bullet.speed)
+    end
+  end
+end
+
+local function preSolve(a, b, coll)
+  local bullet, enemy
+  bullet = instanceOfClass(Bullet, a:getUserData(), b:getUserData())
+  enemy = instanceOfClass(Enemy, a:getUserData(), b:getUserData())
+  if bullet and bullet.physic.body:getLinearDamping() == 100 and enemy then
+    coll:setEnabled(false)
+  end
+  
+  --所有物体都不会和死掉的敌人发生碰撞
+  if enemy and not enemy.alive then
+    coll:setEnabled(false)
   end
 end
 
@@ -54,7 +84,7 @@ function World:init(option)
   -- 初始化物理引擎
   love.physics.setMeter(32)
   self.physics = love.physics.newWorld(0, 0, true)
-  self.physics:setCallbacks(beginContact)
+  self.physics:setCallbacks(beginContact, endContact, preSolve)
   
   --self:initLight()
   
