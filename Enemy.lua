@@ -1,4 +1,12 @@
-Enemy = GameObject:extend("Enemy", {size = 8, speed = 120, alive = true, linearDamping = 8, damge = 0})
+Enemy = GameObject:extend("Enemy", 
+  {
+    size = 8, 
+    speed = 120, 
+    alive = true, 
+    linearDamping = 8, 
+    damge = 0,
+    hp = 100,
+  })
 
 function Enemy:init(posX, posY)
   self.super.init(self, posX, posY)
