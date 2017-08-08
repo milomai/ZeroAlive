@@ -13,6 +13,9 @@ function GameObject:init(posX, posY)
   self.physic.body = love.physics.newBody(world.physics, self.pos.x, self.pos.y, "dynamic")
   self.physic.fixture = love.physics.newFixture(self.physic.body, self.physic.shape)
   self.physic.fixture:setUserData(self)
+  if world.debug then 
+    self.debug = {}
+  end
 end
 
 function GameObject:update(dt)
