@@ -72,6 +72,7 @@ function World:init(option)
 
   self.focus = {x = self.size.width/2, y = self.size.height/2}
   self.enemyCount = 0
+  self.maxEnemyCount = 999
   
   self:initPlayer()
 end
@@ -226,7 +227,7 @@ function World:update(dt)
     return
   end
   
-  if self.generateEnemy then
+  if self.generateEnemy and self.enemyCount < self.maxEnemyCount then
     remainTime = remainTime - dt
     if remainTime <= 0 then
       Enemy.Generate()
