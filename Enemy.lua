@@ -8,12 +8,20 @@ Enemy = GameObject:extend("Enemy",
     hp = 100,
   })
 
+if Railgun.Config.debug then
+  Enemy.id = 0
+end
+
 function Enemy:init(posX, posY)
   self.super.init(self, posX, posY)
   self.physic.body:setLinearDamping(self.linearDamping)
   self.physic.fixture:setCategory(Railgun.Const.Category.enemy)
   self.physic.fixture:setMask(Railgun.Const.Category.bullet)
   self.currentTile = {}
+  if Railgun.Config.debug then
+    Enemy.id = Enemy.id + 1
+    self.id = Enemy.id
+  end
 end
 
 function Enemy:draw()

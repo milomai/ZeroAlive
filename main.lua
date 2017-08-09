@@ -8,6 +8,9 @@ Railgun = {
       effect  = 6,
       grenade = 7,
     },
+  },
+  Config = {
+    debug = false
   }
 }
 
@@ -27,15 +30,14 @@ local mouse = {x = 0, y = 0}
 local edgePoint = {x = 0, y = 0}
 
 function love.load(arg)
-  --local debugSwitch = true
   if arg[#arg] == "-debug" then 
     require("mobdebug").start() 
-    debugSwitch = true
+    Railgun.Config.debug = true
   end
   love.graphics.setPointSize(2)
   world = World:create()
   world:init({mapPath = 'res/map/stage2'})
-  if debugSwitch then
+  if Railgun.Config.debug then
     world.debug = {}
   end
   
