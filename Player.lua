@@ -13,7 +13,7 @@ function Player:init()
   self.super.init(self)
   self.slash = self.speed/2^0.5
   self.physic.body:setLinearDamping(self.linearDamping)
-  self.physic.fixture:setCategory(RAILGUN_GROUP.player)
+  self.physic.fixture:setCategory(Railgun.Const.Category.player)
   self.image = love.graphics.newImage("res/img/player.png")
   self.tile = {}
   self.light = {

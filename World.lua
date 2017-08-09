@@ -23,7 +23,7 @@ local function beginContact(a, b, coll)
   bullet = instanceOfClass(Bullet, a:getUserData(), b:getUserData())
   player = instanceOfClass(Player, a:getUserData(), b:getUserData())
   enemy = instanceOfClass(Enemy, a:getUserData(), b:getUserData())
-  explosive =  (a:getCategory() == RAILGUN_GROUP.effect and a) or (b:getCategory() == RAILGUN_GROUP.effect and b)
+  explosive =  (a:getCategory() == Railgun.Const.Category.effect and a) or (b:getCategory() == Railgun.Const.Category.effect and b)
   
   if explosive then
     local grenade = explosive:getUserData()

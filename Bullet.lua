@@ -14,8 +14,8 @@ function Bullet:init(posX, posY)
   self.id = id
   self.physic.body:setBullet(true)
   self.physic.body:setLinearDamping(self.linearDamping)
-  self.physic.fixture:setCategory(RAILGUN_GROUP.bullet)
-  self.physic.fixture:setMask(RAILGUN_GROUP.player)
+  self.physic.fixture:setCategory(Railgun.Const.Category.bullet)
+  self.physic.fixture:setMask(Railgun.Const.Category.player)
 end
 
 function Bullet:deltaValue(speed, angle)

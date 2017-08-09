@@ -9,8 +9,8 @@ function Grenade:init(physics, posX, posY)
   self.super.init(self, posX, posY)  
   self.physic.body:setBullet(true)
   self.physic.body:setLinearDamping(self.linearDamping)
-  self.physic.fixture:setCategory(RAILGUN_GROUP.grenade)
-  self.physic.fixture:setMask(RAILGUN_GROUP.player)
+  self.physic.fixture:setCategory(Railgun.Const.Category.grenade)
+  self.physic.fixture:setMask(Railgun.Const.Category.player)
   self.nextChangeTime = 1
   self.effectObjects = {}
   --self.debug = {}
@@ -122,8 +122,8 @@ function Grenade:explosive()
   self.explosiveFixture = love.physics.newFixture(self.explosiveBody, self.explosiveShape)
   self.explosiveFixture:setUserData(self)
   self.explosiveFixture:setSensor(true)
-  self.explosiveFixture:setMask(RAILGUN_GROUP.wall, RAILGUN_GROUP.bullet, RAILGUN_GROUP.effect, RAILGUN_GROUP.grenade)
-  self.explosiveFixture:setCategory(RAILGUN_GROUP.effect)
+  self.explosiveFixture:setMask(Railgun.Const.Category.wall, Railgun.Const.Category.bullet, Railgun.Const.Category.effect, Railgun.Const.Category.grenade)
+  self.explosiveFixture:setCategory(Railgun.Const.Category.effect)
   
   if not self.ps then
     local image = love.graphics.newImage('res/img/plus.png')

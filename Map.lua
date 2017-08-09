@@ -59,7 +59,7 @@ function Map:loadTiles()
           local body = love.physics.newBody(self.physics, x+self.tileMap.tilewidth/2, y+self.tileMap.tileheight/2)
           local shape = love.physics.newRectangleShape(self.tileMap.tilewidth, self.tileMap.tileheight)
           local fixture = love.physics.newFixture(body, shape)
-          fixture:setCategory(RAILGUN_GROUP.wall)
+          fixture:setCategory(Railgun.Const.Category.wall)
 
           if self.light then
             self.light.newRectangle(x+self.tileMap.tilewidth/2, y+self.tileMap.tileheight/2, self.tileMap.tilewidth, self.tileMap.tileheight)

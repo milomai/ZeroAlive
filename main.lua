@@ -1,10 +1,14 @@
-RAILGUN_GROUP = {
-  player  = 2,
-  enemy   = 3,
-  bullet  = 4,
-  wall    = 5,
-  effect  = 6,
-  grenade = 7,
+Railgun = {
+  Const = {
+    Category = {
+      player  = 2,
+      enemy   = 3,
+      bullet  = 4,
+      wall    = 5,
+      effect  = 6,
+      grenade = 7,
+    },
+  }
 }
 
 require('ulits')

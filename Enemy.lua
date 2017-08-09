@@ -11,7 +11,7 @@ Enemy = GameObject:extend("Enemy",
 function Enemy:init(posX, posY)
   self.super.init(self, posX, posY)
   self.physic.body:setLinearDamping(self.linearDamping)
-  self.physic.fixture:setCategory(RAILGUN_GROUP.enemy)
+  self.physic.fixture:setCategory(Railgun.Const.Category.enemy)
   self.currentTile = {}
 end
 
@@ -76,7 +76,7 @@ function Enemy:moveToTarget(dt)
     self.target.pos.x, 
     self.target.pos.y, 
     function (fixture, posX, posY, xn, yn, fraction) 
-      if fixture:getCategory() == RAILGUN_GROUP.wall then
+      if fixture:getCategory() == Railgun.Const.Category.wall then
         hasWall = true
         return 0
       end
