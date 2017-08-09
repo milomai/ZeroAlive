@@ -12,6 +12,7 @@ function Enemy:init(posX, posY)
   self.super.init(self, posX, posY)
   self.physic.body:setLinearDamping(self.linearDamping)
   self.physic.fixture:setCategory(Railgun.Const.Category.enemy)
+  self.physic.fixture:setMask(Railgun.Const.Category.bullet)
   self.currentTile = {}
 end
 
