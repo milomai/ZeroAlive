@@ -6,6 +6,7 @@ Enemy = GameObject:extend("Enemy",
     linearDamping = 8, 
     damge = 0,
     hp = 100,
+    bullets = {}, --击中当前敌人的子弹，用来计算伤害
   })
 
 if Railgun.Config.debug then
@@ -18,10 +19,19 @@ function Enemy:init(posX, posY)
   self.physic.fixture:setCategory(Railgun.Const.Category.enemy)
   self.physic.fixture:setMask(Railgun.Const.Category.bullet)
   self.currentTile = {}
+  self:initSensor()
   if Railgun.Config.debug then
     Enemy.id = Enemy.id + 1
     self.id = Enemy.id
   end
+end
+
+function Enemy:initSensor()
+  self.physic.sensor = love.physics.newFixture(self.physic.body, self.physic.shape)
+  self.physic.sensor:setDensity(0)
+  self.physic.sensor:setSensor(true)
+  self.physic.sensor:setUserData(self)
+  self.physic.body:resetMassData()
 end
 
 function Enemy:draw()

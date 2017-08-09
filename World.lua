@@ -33,12 +33,19 @@ local function beginContact(a, b, coll)
   end
   
   --怪物被子弹打中就死
-  if bullet and bullet.speed > 240 and enemy and enemy.alive then
-    bullet.physic.body:setLinearDamping(100)
-    enemy:die()
-    if world.debug then
-      print("bullet(" .. bullet.id .. ") kill " .. tostring(enemy) .. " at speed " .. bullet.speed)
+  if bullet and --[[bullet.speed > 240 and]] enemy and enemy.alive then
+    bullet.hit = bullet.hit + 1
+    if not (bullet.physic.body:getLinearDamping() == 100) then
+      bullet.physic.body:setLinearDamping(100)
     end
+    --enemy:die()
+  end
+  
+  if bullet and enemy then
+    if world.debug then
+      print(world.debug.frame .. ") bullet[".. bullet.id .. "] in enemy[" .. enemy.id .. "] speed:" .. bullet.speed)
+    end
+    enemy.bullets[bullet] = {speed = bullet.speed}
   end
   
   --怪物碰到玩家就会攻击
@@ -52,20 +59,20 @@ local function endContact(a, b, coll)
   bullet = instanceOfClass(Bullet, a:getUserData(), b:getUserData())
   enemy = instanceOfClass(Enemy, a:getUserData(), b:getUserData())
   if bullet and enemy then
-    bullet.physic.body:setLinearDamping(bullet.linearDamping)
-    if world.debug and bullet.speed > 240 then
-      print("bullet(" .. bullet.id .. ") endContact " .. tostring(enemy) .. " at speed " .. bullet.speed)
+    bullet.hit = bullet.hit - 1
+    if bullet.hit <= 0 then
+      bullet.physic.body:setLinearDamping(bullet.linearDamping)
     end
+    if world.debug then
+      print(world.debug.frame .. ") bullet[".. bullet.id .. "] out enemy[" .. enemy.id .. "] speed:" .. bullet.speed .. " hit:" .. bullet.hit)
+    end
+    local inSpeed = enemy.bullets[bullet].speed
+    local damage = inSpeed - bullet.speed
   end
 end
 
 local function preSolve(a, b, coll)
-  local bullet, enemy
-  bullet = instanceOfClass(Bullet, a:getUserData(), b:getUserData())
-  enemy = instanceOfClass(Enemy, a:getUserData(), b:getUserData())
-  if bullet and bullet.physic.body:getLinearDamping() == 100 and enemy then
-    coll:setEnabled(false)
-  end
+  local enemy = instanceOfClass(Enemy, a:getUserData(), b:getUserData())
   
   --所有物体都不会和死掉的敌人发生碰撞
   if enemy and not enemy.alive then
