@@ -58,16 +58,20 @@ local function endContact(a, b, coll)
   local bullet, enemy
   bullet = instanceOfClass(Bullet, a:getUserData(), b:getUserData())
   enemy = instanceOfClass(Enemy, a:getUserData(), b:getUserData())
-  if bullet and enemy then
+  if bullet and enemy and enemy.alive then
     bullet.hit = bullet.hit - 1
     if bullet.hit <= 0 then
       bullet.physic.body:setLinearDamping(bullet.linearDamping)
     end
-    if world.debug then
-      print(world.debug.frame .. ") bullet[".. bullet.id .. "] out enemy[" .. enemy.id .. "] speed:" .. bullet.speed .. " hit:" .. bullet.hit)
-    end
     local inSpeed = enemy.bullets[bullet].speed
     local damage = inSpeed - bullet.speed
+    if enemy.hp - damage <= 0 then
+      enemy:die()
+    end
+    
+    if world.debug then
+      print(world.debug.frame .. ") bullet[".. bullet.id .. "] out enemy[" .. enemy.id .. "] speed:" .. bullet.speed .. " hit:" .. bullet.hit .. " damge:" .. damage)
+    end
   end
 end
 
