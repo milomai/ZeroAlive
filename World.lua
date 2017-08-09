@@ -6,8 +6,6 @@ World = class("World", {
     generateEnemy = true,
   })
 
---local frameIndex = 0
-
 local function instanceOfClass(aClass, object1, object2)
   if isInstanceOfClass(object1, aClass) then
     return object1
@@ -267,7 +265,12 @@ function World:update(dt)
   end
   
   self.physics:update(dt)
-  --frameIndex = frameIndex + 1
+  if self.debug then
+    if not self.debug.frame then
+      self.debug.frame = 0
+    end
+    self.debug.frame = self.debug.frame + 1
+  end
   for i, object in ipairs(_objects) do
     if type(object.handleInput) == 'function' then
       object:handleInput(dt)
