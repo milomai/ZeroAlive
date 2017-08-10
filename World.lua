@@ -65,8 +65,11 @@ local function endContact(a, b, coll)
     end
     local inSpeed = enemy.bullets[bullet].speed
     local damage = inSpeed - bullet.speed
-    if enemy.hp - damage <= 0 then
-      enemy:die()
+    if damage > 30 then
+      enemy.hp = enemy.hp - damage
+      if enemy.hp <= 0 then
+        enemy:die()
+      end
     end
     
     if world.debug then
