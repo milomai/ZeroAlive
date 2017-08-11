@@ -21,6 +21,9 @@ function Enemy:init(posX, posY)
   self.currentTile = {}
   self:initSensor()
   if Railgun.Config.debug then
+    if not Enemy.id then
+      Enemy.id = 0
+    end
     Enemy.id = Enemy.id + 1
     self.id = Enemy.id
   end
