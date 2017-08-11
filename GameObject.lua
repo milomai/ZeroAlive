@@ -33,3 +33,9 @@ end
 
 function GameObject:debugDraw()
 end
+
+function GameObject:beginContact(other, contact)
+end
+
+function GameObject:endContact(other, contact)
+end

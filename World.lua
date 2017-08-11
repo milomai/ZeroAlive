@@ -17,6 +17,10 @@ local function instanceOfClass(aClass, object1, object2)
 end
 
 local function beginContact(a, b, coll)
+  if isInstanceOfClass(a:getUserData(), GameObject) and isInstanceOfClass(b:getUserData(), GameObject) then
+    a:getUserData():beginContact(b:getUserData(), coll)
+    b:getUserData():beginContact(a:getUserData(), coll)
+  end
   local bullet, player, enemy, explosive
   bullet = instanceOfClass(Bullet, a:getUserData(), b:getUserData())
   player = instanceOfClass(Player, a:getUserData(), b:getUserData())
@@ -55,6 +59,10 @@ local function beginContact(a, b, coll)
 end
 
 local function endContact(a, b, coll)
+  if isInstanceOfClass(a:getUserData(), GameObject) and isInstanceOfClass(b:getUserData(), GameObject) then
+    a:getUserData():endContact(b:getUserData(), coll)
+    b:getUserData():endContact(a:getUserData(), coll)
+  end
   local bullet, enemy
   bullet = instanceOfClass(Bullet, a:getUserData(), b:getUserData())
   enemy = instanceOfClass(Enemy, a:getUserData(), b:getUserData())
