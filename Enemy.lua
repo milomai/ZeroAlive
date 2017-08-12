@@ -5,7 +5,7 @@ Enemy = GameObject:extend("Enemy",
     alive = true, 
     linearDamping = 8, 
     damge = 0,
-    hp = 100,
+    hp = 400,
     bullets = {}, --击中当前敌人的子弹，用来计算伤害
   })
 
@@ -151,6 +151,13 @@ end
 
 function Enemy:attack(roler)
   roler:hit(self.damge)
+end
+
+function Enemy:hit(damge)
+  self.hp = self.hp - damage
+  if self.hp <= 0 then
+    self:die()
+  end
 end
 
 function Enemy.Generate(posX, posY, size)

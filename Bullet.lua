@@ -83,10 +83,7 @@ function Bullet:endContact(other, contact)
       --enemy.bullets[self] = nil
       local damage = inSpeed - self.speed
       if damage > 30 then
-        enemy.hp = enemy.hp - damage
-        if enemy.hp <= 0 then
-          enemy:die()
-        end
+        enemy:hit(damage)
       end
       
       if world.debug then
