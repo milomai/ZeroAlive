@@ -21,20 +21,10 @@ local function beginContact(a, b, coll)
     a:getUserData():beginContact(b:getUserData(), coll)
     b:getUserData():beginContact(a:getUserData(), coll)
   end
-  local bullet, player, enemy, explosive
+  local bullet, player, enemy
   bullet = instanceOfClass(Bullet, a:getUserData(), b:getUserData())
   player = instanceOfClass(Player, a:getUserData(), b:getUserData())
   enemy = instanceOfClass(Enemy, a:getUserData(), b:getUserData())
-  explosive =  (a:getCategory() == Railgun.Const.Category.effect and a) or (b:getCategory() == Railgun.Const.Category.effect and b)
-  
-  if explosive then
-    local grenade = explosive:getUserData()
-    local other = ((a == explosive and b) or a)
-    other = other:getUserData()
-    if other then
-      table.insert(grenade.effectObjects, other)
-    end
-  end
   
   --怪物被子弹打中就死
   if bullet and --[[bullet.speed > 240 and]] enemy and enemy.alive then

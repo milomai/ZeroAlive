@@ -139,3 +139,10 @@ function Grenade:throw(targetX, targetY)
   local dy = force * math.sin(angle)
   self.physic.body:applyLinearImpulse(dx, dy)
 end
+
+function Grenade:beginContact(other, contact)
+  self.super.beginContact(self, other, contact)
+  if isInstanceOfClass(other, Enemy) then
+    table.insert(self.effectObjects, other)
+  end
+end
