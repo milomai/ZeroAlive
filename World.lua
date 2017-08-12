@@ -21,14 +21,6 @@ local function beginContact(a, b, coll)
     a:getUserData():beginContact(b:getUserData(), coll)
     b:getUserData():beginContact(a:getUserData(), coll)
   end
-  local player, enemy
-  player = instanceOfClass(Player, a:getUserData(), b:getUserData())
-  enemy = instanceOfClass(Enemy, a:getUserData(), b:getUserData())
-  
-  --怪物碰到玩家就会攻击
-  if enemy and player and enemy.alive and player.alive then
-    enemy:attack(player)
-  end
 end
 
 local function endContact(a, b, coll)

@@ -4,7 +4,7 @@ Enemy = GameObject:extend("Enemy",
     speed = 120, 
     alive = true, 
     linearDamping = 8, 
-    damge = 0,
+    damge = 5,
     hp = 400,
     bullets = {}, --击中当前敌人的子弹，用来计算伤害
   })
@@ -34,6 +34,7 @@ function Enemy:initSensor()
   self.physic.sensor:setDensity(0)
   self.physic.sensor:setSensor(true)
   self.physic.sensor:setUserData(self)
+  self.physic.sensor:setMask(Railgun.Const.Category.player)
   self.physic.body:resetMassData()
 end
 
@@ -149,11 +150,7 @@ function Enemy:die()
   end
 end
 
-function Enemy:attack(roler)
-  roler:hit(self.damge)
-end
-
-function Enemy:hit(damge)
+function Enemy:hit(damage)
   self.hp = self.hp - damage
   if self.hp <= 0 then
     self:die()
@@ -172,4 +169,15 @@ function Enemy.Generate(posX, posY, size)
   local enemy = Enemy:new(pos.x, pos.y)
   enemy.target = world.player
   world:add(enemy)
+end
+
+function Enemy:beginContact(other, contact)
+  self.super.beginContact(self, other, contact)
+  if isInstanceOfClass(other, Player) then
+    local player = other
+    --怪物碰到玩家就会攻击
+    if self.alive and player.alive then
+      player:hit(self.damge)
+    end
+  end
 end
