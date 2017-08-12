@@ -143,6 +143,9 @@ end
 function Grenade:beginContact(other, contact)
   self.super.beginContact(self, other, contact)
   if isInstanceOfClass(other, Enemy) then
-    table.insert(self.effectObjects, other)
+    local enemy = other
+    if enemy.alive then
+      table.insert(self.effectObjects, other)
+    end
   end
 end
