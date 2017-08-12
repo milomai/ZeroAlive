@@ -52,3 +52,46 @@ function Bullet:fly(speed, angle)
   self:deltaValue(speed, angle)
   self.physic.body:applyLinearImpulse(self.dx, self.dy)
 end
+
+function Bullet:beginContact(other, contact)
+  self.super.beginContact(self, other, contact)
+  if isInstanceOfClass(other, Enemy) then
+    local enemy = other
+    if enemy.alive then
+      self.hit = self.hit + 1
+      if not (self.physic.body:getLinearDamping() == 100) then
+        self.physic.body:setLinearDamping(100)
+      end
+      if world.debug then
+        print(world.debug.frame .. ") bullet[".. self.id .. "] in enemy[" .. enemy.id .. "] speed:" .. self.speed)
+      end
+      enemy.bullets[self.id] = {speed = self.speed}
+    end
+  end
+end
+
+function Bullet:endContact(other, contact)
+  self.super.beginContact(self, other, contact)
+  if isInstanceOfClass(other, Enemy) then
+    local enemy = other
+    if enemy.alive then
+      self.hit = self.hit - 1
+      if self.hit <= 0 then
+        self.physic.body:setLinearDamping(self.linearDamping)
+      end
+      local inSpeed = enemy.bullets[self.id].speed
+      --enemy.bullets[self] = nil
+      local damage = inSpeed - self.speed
+      if damage > 30 then
+        enemy.hp = enemy.hp - damage
+        if enemy.hp <= 0 then
+          enemy:die()
+        end
+      end
+      
+      if world.debug then
+        print(world.debug.frame .. ") bullet[".. self.id .. "] out enemy[" .. enemy.id .. "] speed:" .. self.speed .. " hit:" .. self.hit .. " damge:" .. damage)
+      end
+    end
+  end
+end

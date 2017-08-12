@@ -21,26 +21,9 @@ local function beginContact(a, b, coll)
     a:getUserData():beginContact(b:getUserData(), coll)
     b:getUserData():beginContact(a:getUserData(), coll)
   end
-  local bullet, player, enemy
-  bullet = instanceOfClass(Bullet, a:getUserData(), b:getUserData())
+  local player, enemy
   player = instanceOfClass(Player, a:getUserData(), b:getUserData())
   enemy = instanceOfClass(Enemy, a:getUserData(), b:getUserData())
-  
-  --怪物被子弹打中就死
-  if bullet and --[[bullet.speed > 240 and]] enemy and enemy.alive then
-    bullet.hit = bullet.hit + 1
-    if not (bullet.physic.body:getLinearDamping() == 100) then
-      bullet.physic.body:setLinearDamping(100)
-    end
-    --enemy:die()
-  end
-  
-  if bullet and enemy then
-    if world.debug then
-      print(world.debug.frame .. ") bullet[".. bullet.id .. "] in enemy[" .. enemy.id .. "] speed:" .. bullet.speed)
-    end
-    enemy.bullets[bullet] = {speed = bullet.speed}
-  end
   
   --怪物碰到玩家就会攻击
   if enemy and player and enemy.alive and player.alive then
@@ -52,27 +35,6 @@ local function endContact(a, b, coll)
   if isInstanceOfClass(a:getUserData(), GameObject) and isInstanceOfClass(b:getUserData(), GameObject) then
     a:getUserData():endContact(b:getUserData(), coll)
     b:getUserData():endContact(a:getUserData(), coll)
-  end
-  local bullet, enemy
-  bullet = instanceOfClass(Bullet, a:getUserData(), b:getUserData())
-  enemy = instanceOfClass(Enemy, a:getUserData(), b:getUserData())
-  if bullet and enemy and enemy.alive then
-    bullet.hit = bullet.hit - 1
-    if bullet.hit <= 0 then
-      bullet.physic.body:setLinearDamping(bullet.linearDamping)
-    end
-    local inSpeed = enemy.bullets[bullet].speed
-    local damage = inSpeed - bullet.speed
-    if damage > 30 then
-      enemy.hp = enemy.hp - damage
-      if enemy.hp <= 0 then
-        enemy:die()
-      end
-    end
-    
-    if world.debug then
-      print(world.debug.frame .. ") bullet[".. bullet.id .. "] out enemy[" .. enemy.id .. "] speed:" .. bullet.speed .. " hit:" .. bullet.hit .. " damge:" .. damage)
-    end
   end
 end
 
