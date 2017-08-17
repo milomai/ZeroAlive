@@ -6,7 +6,9 @@ Gun = class("Gun", {
     accuracy = 4*math.pi/180,
     maxAmmo = 30,
     reloadTime = 3,
-    muzzleVelocity = 3})
+    muzzleVelocity = 3,
+    fireTime = 0,             -- 记录上次开火的时间
+  })
 
 -- owner 必须是 GameObject
 function Gun:init(owner)

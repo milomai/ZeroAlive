@@ -204,6 +204,7 @@ function Enemy:beginContact(other, contact)
 end
 
 function Enemy:endContact(other, contact)
+  self.super.endContact(self, other, contact)
   if self.contactObjects[other] then
     self.contactObjects.count = self.contactObjects.count - 1
     self.contactObjects[other] = nil

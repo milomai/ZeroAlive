@@ -6,11 +6,12 @@ Grenade = GameObject:extend("Grenade", {
     })
 
 function Grenade:init(physics, posX, posY)
-  self.super.init(self, posX, posY)  
+  self.super.init(self, posX, posY)
   self.physic.body:setBullet(true)
   self.physic.body:setLinearDamping(self.linearDamping)
   self.physic.fixture:setCategory(Railgun.Const.Category.grenade)
   self.physic.fixture:setMask(Railgun.Const.Category.player)
+  self.physic.fixture:setUserData(nil)
   self.nextChangeTime = 1
   self.effectObjects = {}
   --self.debug = {}
