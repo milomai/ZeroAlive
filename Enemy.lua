@@ -7,6 +7,9 @@ Enemy = GameObject:extend("Enemy",
     damge = 5,
     hp = 400,
     bullets = {}, --击中当前敌人的子弹，用来计算伤害
+    contactObjects = {count = 0}, --附近的敌人
+    hitRate = 1, -- 一秒攻击一次
+    lastHitTime = 0,
   })
 
 if Railgun.Config.debug then
@@ -118,8 +121,14 @@ end
 
 function Enemy:update(dt)
   self.super.update(self, dt)
-  if self.alive and self.target then
-    self:moveToTarget(dt)
+  if self.alive then
+    if self.target then
+      self:moveToTarget(dt)
+    end
+    if self.contactObjects.count > 0 then
+      self:attrck()
+    end 
+    
   elseif self.diePS then
     self.diePS:update(dt)
     if self.removeRemainTime <= 0 then
@@ -150,6 +159,17 @@ function Enemy:die()
   end
 end
 
+function Enemy:attrck()
+  if self.lastHitTime < love.timer.getTime() - (1/self.hitRate) then
+    for key, object in pairs(self.contactObjects) do
+      if not (key == "count") then
+        object:hit(self.damge)
+      end
+    end
+    self.lastHitTime = love.timer.getTime()
+  end
+end
+
 function Enemy:hit(damage)
   self.hp = self.hp - damage
   if self.hp <= 0 then
@@ -177,7 +197,15 @@ function Enemy:beginContact(other, contact)
     local player = other
     --怪物碰到玩家就会攻击
     if self.alive and player.alive then
-      player:hit(self.damge)
+      self.contactObjects[player] = player
+      self.contactObjects.count = self.contactObjects.count + 1
     end
+  end
+end
+
+function Enemy:endContact(other, contact)
+  if self.contactObjects[other] then
+    self.contactObjects.count = self.contactObjects.count - 1
+    self.contactObjects[other] = nil
   end
 end
