@@ -1,6 +1,7 @@
 require('Map')
 require "light/postshader"
 require "light/light"
+require "Bonus"
 local box2DDebugDraw = require('debugWorldDraw')
 World = class("World", {
     generateEnemy = true,
@@ -211,6 +212,9 @@ end
 local EnemyGenerateRate = 1
 local remainTime = 0
 
+local BonusGenerateRate = 1
+local bonusRemainTime = BonusGenerateRate
+
 function World:update(dt)
   if world.debug then
     world.debug.findPathUsage = 0
@@ -228,6 +232,12 @@ function World:update(dt)
       self.enemyCount = self.enemyCount + 1
       remainTime = remainTime + EnemyGenerateRate
     end
+  end
+  
+  bonusRemainTime = bonusRemainTime - dt
+  if bonusRemainTime <= 0 then
+    Bonus.Generate()
+    bonusRemainTime = bonusRemainTime + BonusGenerateRate
   end
   
   self.physics:update(dt)
