@@ -3,9 +3,7 @@ require "light/postshader"
 require "light/light"
 require "Bonus"
 local box2DDebugDraw = require('debugWorldDraw')
-World = class("World", {
-    generateEnemy = true,
-  })
+World = class("World")
 
 local function instanceOfClass(aClass, object1, object2)
   if isInstanceOfClass(object1, aClass) then
@@ -225,7 +223,7 @@ function World:update(dt)
     return
   end
   
-  if self.generateEnemy and self.enemyCount < self.maxEnemyCount then
+  if Railgun.Config.generateEnemy and self.enemyCount < self.maxEnemyCount then
     remainTime = remainTime - dt
     if remainTime <= 0 then
       Enemy.Generate()

@@ -10,7 +10,8 @@ Railgun = {
     },
   },
   Config = {
-    debug = false
+    debug = false,
+    generateEnemy = true,
   }
 }
 
