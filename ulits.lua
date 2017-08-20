@@ -14,6 +14,11 @@ function isInstanceOfClass(instance, aClass)
   return class.isInstance(instance) and instance:instanceOf(aClass)
 end
 
+function getSpeed(body)
+  local speedX, speedY = body:getLinearVelocity()
+  return math.sqrt(speedX * speedX + speedY * speedY), math.atan2(speedY, speedX), speedX, speedY
+end
+
 -- 更新射线在屏幕边缘的位置
 function updateEdgePoint()
   mouse.x, mouse.y = love.mouse.getPosition()

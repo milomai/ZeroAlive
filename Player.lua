@@ -1,4 +1,6 @@
 require('Gun')
+local anim8 = require "anim8.anim8"
+
 Player = GameObject:extend("Player", 
   {playerName = "New Player",
    pos = {x = 50, y = 50},
@@ -8,19 +10,40 @@ Player = GameObject:extend("Player",
    hp = 100,
    forceDraw = true,
    linearDamping = 16,
-   debug = false})
+   debug = false,
+   animiatIndex = 1,
+   status = "run",})
 
 function Player:init()
   self.super.init(self)
   self.slash = self.speed/2^0.5
   self.physic.body:setLinearDamping(self.linearDamping)
   self.physic.fixture:setCategory(Railgun.Const.Category.player)
-  self.image = love.graphics.newImage("res/img/moe_stand.png")
+  self.image = love.graphics.newImage("res/img/moe_run.png")
+  self.frame = {}
+  self.frame.stand = {}
+  self.frame.stand.image = love.graphics.newImage("res/img/moe_stand.png")
+  self.frame.stand.draw = function ()
+    love.graphics.draw(self.frame.stand.image, self.pos.x, self.pos.y, 0, self.direction, 1, 8, 8)
+  end
+  self.frame.run = {}
+  self.frame.run.image = love.graphics.newImage("res/img/moe_run.png")
+  local g = anim8.newGrid(16, 16, self.frame.run.image:getWidth(), self.frame.run.image:getHeight())
+  self.frame.run.quads = g(1,1, 2,1)
+  self.frame.run.draw = function ()
+    local index = math.fmod(self.animiatIndex, 2) + 1
+    love.graphics.draw(self.frame.run.image, self.frame.run.quads[index], self.pos.x, self.pos.y, 0, self.direction, 1, 8, 8)
+  end
+  
+  
+  self.timer = love.timer.getTime()
+  
   self.tile = {}
   self.light = {
     color = {255, 127, 63},
     range = 300
-    }
+  }
+  
 end
 
 function Player:setSpeed(speed)
@@ -31,15 +54,8 @@ end
 function Player:draw()
   self.super.draw(self)
   
-  local speedX = self.physic.body:getLinearVelocity()
-  if not (speedX == 0) then
-    self.direction = (speedX > 0 and 1) or -1
-  end
-  
-  
-  if self.image then
-    love.graphics.draw(self.image, self.pos.x, self.pos.y, 0, self.direction, 1, self.image:getWidth()/2, self.image:getHeight()/2)
-  end
+  self.frame[self.status].draw()
+
   if self.weapon then
     self.weapon:draw()
   end
@@ -91,6 +107,33 @@ function Player:update(dt)
   if self.weapon then self.weapon:update(dt) end
   if self.light.object then
     self.light.object.setPosition(self.pos.x, self.pos.y)
+  end
+  
+  local speed, angle, speedX, speedY = getSpeed(self.physic.body)
+  
+  -- 速度小于 20 在屏幕上就看不出角色在移动了
+  if not (speed < 20) then
+    self.status = "run"
+    
+    local diff = math.abs(math.abs(angle) - math.pi/2)
+    
+    -- 加上一个误差范围，避免异常变换图片的移动方向
+    if diff > 0.01 then
+      if angle > -math.pi/2 and angle < math.pi/2 then
+        self.direction = 1
+      else
+        self.direction = -1
+      end
+    end
+  else
+    self.status = "stand"
+  end
+  
+  local fps = math.modf(speed/25)
+
+  if love.timer.getTime() - self.timer > 1/fps then
+    self.timer = love.timer.getTime()
+    self.animiatIndex = self.animiatIndex + 1
   end
 end
 

@@ -39,9 +39,7 @@ end
 
 function Bullet:update(dt)
   self.super.update(self, dt)
-  local speedX, speedY = self.physic.body:getLinearVelocity()
-  self.speed = math.sqrt(speedX * speedX + speedY * speedY)
-  self.angle = math.atan2(speedY, speedX)
+  self.speed, self.angle = getSpeed(self.physic.body)
   if self.speed  <= 30 then
     self.removed = true
   end
