@@ -27,7 +27,9 @@ end
   
 function GameObject:draw()
   if self.debug then
+    love.graphics.push("all")
     self:debugDraw()
+    love.graphics.pop()
   end
 end
 

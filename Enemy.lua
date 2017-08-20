@@ -45,8 +45,7 @@ function Enemy:draw()
   love.graphics.push('all')
   if self.alive then
     love.graphics.setColor(100, 0, 0, 255)
-    love.graphics.circle('fill', self.pos.x, self.pos.y, self.size, 16)
-    --self:debugDraw()
+    love.graphics.circle('fill', self.pos.x, self.pos.y, self.size)
   elseif self.diePS then
     love.graphics.draw(self.diePS, self.pos.x, self.pos.y)
   end
