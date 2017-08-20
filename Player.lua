@@ -7,14 +7,15 @@ Player = GameObject:extend("Player",
    alive = true,
    hp = 100,
    forceDraw = true,
-   linearDamping = 16})
+   linearDamping = 16,
+   debug = false})
 
 function Player:init()
   self.super.init(self)
   self.slash = self.speed/2^0.5
   self.physic.body:setLinearDamping(self.linearDamping)
   self.physic.fixture:setCategory(Railgun.Const.Category.player)
-  self.image = love.graphics.newImage("res/img/player.png")
+  self.image = love.graphics.newImage("res/img/moe_stand.png")
   self.tile = {}
   self.light = {
     color = {255, 127, 63},
@@ -28,12 +29,26 @@ function Player:setSpeed(speed)
 end
 
 function Player:draw()
+  self.super.draw(self)
+  
+  local speedX = self.physic.body:getLinearVelocity()
+  if not (speedX == 0) then
+    self.direction = (speedX > 0 and 1) or -1
+  end
+  
+  
   if self.image then
-    love.graphics.draw(self.image, self.pos.x - (self.image:getWidth()/2), self.pos.y - (self.image:getHeight()/2))
+    love.graphics.draw(self.image, self.pos.x, self.pos.y, 0, self.direction, 1, self.image:getWidth()/2, self.image:getHeight()/2)
   end
   if self.weapon then
     self.weapon:draw()
   end
+end
+
+function Player:debugDraw()
+  self.super.debugDraw(self)
+  love.graphics.setColor(100, 100, 255, 255)
+  love.graphics.circle('fill', self.pos.x, self.pos.y, self.size)
 end
 
 function Player:handleInput(dt)
