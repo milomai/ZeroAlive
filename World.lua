@@ -275,8 +275,7 @@ end
 
 function World:draw()
   love.graphics.push()
-  love.graphics.translate(-self.focus.x+love.graphics.getWidth()/2, -self.focus.y+love.graphics.getHeight()/2)
-  love.graphics.rectangle('line', 0, 0, self.size.width, self.size.height)
+  love.graphics.translate(math.round(-self.focus.x+love.graphics.getWidth()/2), math.round(-self.focus.y+love.graphics.getHeight()/2))--love.graphics.rectangle('line', 0, 0, self.size.width, self.size.height)
   
   self.map:draw()
   

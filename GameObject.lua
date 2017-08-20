@@ -20,8 +20,8 @@ end
 
 function GameObject:update(dt)
   if self.physic.body then
-    self.pos.x = self.physic.body:getX()
-    self.pos.y = self.physic.body:getY()
+    self.pos.x = math.round(self.physic.body:getX())
+    self.pos.y = math.round(self.physic.body:getY())
   end
 end
   

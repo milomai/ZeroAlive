@@ -1,6 +1,15 @@
 -- Returns the angle between two points.
 function math.angle(x1,y1, x2,y2) return math.atan2(y2-y1, x2-x1) end
 
+function math.round(num)
+  local int, float = math.modf(num)
+  if float >= 0.5 then
+    return int + 1
+  else 
+    return int
+  end
+end
+
 function isInstanceOfClass(instance, aClass)
   return class.isInstance(instance) and instance:instanceOf(aClass)
 end
