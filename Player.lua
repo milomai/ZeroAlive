@@ -12,38 +12,50 @@ Player = GameObject:extend("Player",
    linearDamping = 16,
    debug = false,
    animiatIndex = 1,
-   status = "run",})
+   status = "run",
+   direction = {
+     x = 1,
+     y = 1,
+   }})
 
 function Player:init()
   self.super.init(self)
   self.slash = self.speed/2^0.5
   self.physic.body:setLinearDamping(self.linearDamping)
   self.physic.fixture:setCategory(Railgun.Const.Category.player)
-  self.image = love.graphics.newImage("res/img/moe_run.png")
-  self.frame = {}
-  self.frame.stand = {}
-  self.frame.stand.image = love.graphics.newImage("res/img/moe_stand.png")
-  self.frame.stand.draw = function ()
-    love.graphics.draw(self.frame.stand.image, self.pos.x, self.pos.y, 0, self.direction, 1, 8, 8)
-  end
-  self.frame.run = {}
-  self.frame.run.image = love.graphics.newImage("res/img/moe_run.png")
-  local g = anim8.newGrid(16, 16, self.frame.run.image:getWidth(), self.frame.run.image:getHeight())
-  self.frame.run.quads = g(1,1, 2,1)
-  self.frame.run.draw = function ()
-    local index = math.fmod(self.animiatIndex, 2) + 1
-    love.graphics.draw(self.frame.run.image, self.frame.run.quads[index], self.pos.x, self.pos.y, 0, self.direction, 1, 8, 8)
-  end
-  
-  
-  self.timer = love.timer.getTime()
-  
+  self:initAnimation()
   self.tile = {}
   self.light = {
     color = {255, 127, 63},
     range = 300
   }
   
+end
+
+function Player:initAnimation()
+  local image = love.graphics.newImage("res/img/moe.png")
+  local g = anim8.newGrid(32, 32, image:getWidth(), image:getHeight())
+  self.frame = {
+    ["image"] = image,
+    front = {
+      stand = {
+        quads = g(1,1),
+      },
+      run = {
+        quads = g("1-4",2),
+      },
+    },
+    back = {
+      stand = {
+        quads = g(2,1),
+      },
+      run = {
+        quads = g("1-4",3),
+      },
+    }
+  }
+
+  self.timer = love.timer.getTime()
 end
 
 function Player:setSpeed(speed)
@@ -54,7 +66,16 @@ end
 function Player:draw()
   self.super.draw(self)
   
-  self.frame[self.status].draw()
+  local direction 
+  if self.direction.y == 1 then
+    direction = "front"
+  else
+    direction = "back"
+  end
+  
+  local animate = self.frame[direction][self.status]
+  local index = math.fmod(self.animiatIndex, #animate.quads) + 1
+  love.graphics.draw(self.frame.image, animate.quads[index], self.pos.x, self.pos.y, 0, self.direction.x, 1, 16, 16)
 
   if self.weapon then
     self.weapon:draw()
@@ -109,22 +130,31 @@ function Player:update(dt)
     self.light.object.setPosition(self.pos.x, self.pos.y)
   end
   
-  local speed, angle, speedX, speedY = getSpeed(self.physic.body)
+  local speed = getSpeed(self.physic.body, 1)
+  
+  local speedX, speedY = self.physic.body:getLinearVelocity()
+
+  if math.abs(speedX) > 1 then
+    if speedX > 0 then
+      self.direction.x = 1
+    else
+      self.direction.x = -1
+    end
+  end
+  
+  if math.abs(speedY) > 1 then
+    -- 这里 -10 是表示向上移动的速度大于 10 才绘制背朝屏幕的图片
+    -- 因为横着走的时候也用背朝屏幕的图片感觉很怪
+    if speedY > -10 then
+      self.direction.y = 1
+    else
+      self.direction.y = -1
+    end
+  end
   
   -- 速度小于 20 在屏幕上就看不出角色在移动了
   if not (speed < 20) then
     self.status = "run"
-    
-    local diff = math.abs(math.abs(angle) - math.pi/2)
-    
-    -- 加上一个误差范围，避免异常变换图片的移动方向
-    if diff > 0.01 then
-      if angle > -math.pi/2 and angle < math.pi/2 then
-        self.direction = 1
-      else
-        self.direction = -1
-      end
-    end
   else
     self.status = "stand"
   end

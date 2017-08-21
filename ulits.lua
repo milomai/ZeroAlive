@@ -14,9 +14,20 @@ function isInstanceOfClass(instance, aClass)
   return class.isInstance(instance) and instance:instanceOf(aClass)
 end
 
-function getSpeed(body)
+function getSpeed(body, returnCount)
+  if not returnCount then returnCount = 4 end
   local speedX, speedY = body:getLinearVelocity()
-  return math.sqrt(speedX * speedX + speedY * speedY), math.atan2(speedY, speedX), speedX, speedY
+  local speed, angle
+  speed = math.sqrt(speedX * speedX + speedY * speedY)
+  if returnCount >= 2 then
+    angle = math.atan2(speedY, speedX)
+  end
+  
+  if returnCount == 1 then
+    return speed
+  else
+    return speed, angle, speedX, speedY
+  end
 end
 
 -- 更新射线在屏幕边缘的位置
