@@ -1,4 +1,4 @@
-Bullet = GameObject:extend("Bullet", {size = 1, linearDamping = 1, hit = 0})
+Bullet = GameObject:extend("Bullet", {size = 2, linearDamping = 1, hit = 0})
 
 local trackImage = gradient({{255,255,255,255},{255,255,255,0}})
 
@@ -34,7 +34,7 @@ end
 
 function Bullet:draw()
   self.super.draw(self)
-  drawInRect(trackImage, self.pos.x, self.pos.y, self.speed/30, 1, math.pi + self.angle)
+  drawInRect(trackImage, self.pos.x, self.pos.y, self.speed/30, 2, math.pi + self.angle)
 end
 
 function Bullet:update(dt)
