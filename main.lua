@@ -11,7 +11,14 @@ Railgun = {
   },
   Config = {
     debug = false,
-    generateEnemy = true,
+    Enemy = {
+      Generate = true,
+      Max = 30,
+    },
+    Bonus = {
+      Generate = true,
+      Max = 1,
+    },
   }
 }
 

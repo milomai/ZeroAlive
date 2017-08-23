@@ -65,7 +65,7 @@ function World:init(option)
 
   self.focus = {x = self.size.width/2, y = self.size.height/2}
   self.enemyCount = 0
-  self.maxEnemyCount = 999
+  self.bonusCount = 0
   
   self:initPlayer()
 end
@@ -223,7 +223,7 @@ function World:update(dt)
     return
   end
   
-  if Railgun.Config.generateEnemy and self.enemyCount < self.maxEnemyCount then
+  if Railgun.Config.Enemy.Generate and self.enemyCount < Railgun.Config.Enemy.Max then
     remainTime = remainTime - dt
     if remainTime <= 0 then
       Enemy.Generate()
@@ -232,10 +232,13 @@ function World:update(dt)
     end
   end
   
-  bonusRemainTime = bonusRemainTime - dt
-  if bonusRemainTime <= 0 then
-    Bonus.Generate()
-    bonusRemainTime = bonusRemainTime + BonusGenerateRate
+  if Railgun.Config.Bonus.Generate and self.bonusCount < Railgun.Config.Bonus.Max then
+    bonusRemainTime = bonusRemainTime - dt
+    if bonusRemainTime <= 0 then
+      Bonus.Generate()
+      self.bonusCount = self.bonusCount + 1
+      bonusRemainTime = bonusRemainTime + BonusGenerateRate
+    end
   end
   
   self.physics:update(dt)
