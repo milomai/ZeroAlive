@@ -1,7 +1,7 @@
 Grenade = GameObject:extend("Grenade", {
     range = 100,
     explosiveDelay = 3,
-    size = 3,
+    size = 6,
     linearDamping = 5,
     })
 
@@ -14,6 +14,7 @@ function Grenade:init(physics, posX, posY)
   self.physic.fixture:setUserData(nil)
   self.nextChangeTime = 1
   self.effectObjects = {}
+  self.image = love.graphics.newImage("res/img/bomb.png")
   --self.debug = {}
 end
 
@@ -76,11 +77,12 @@ function Grenade:draw()
     love.graphics.draw(self.ps, self.pos.x, self.pos.y)
   else
     if self.flash then
-      love.graphics.setColor(200, 200, 255, 255)
+      love.graphics.setColor(255, 0, 0, 255)
     else
-      love.graphics.setColor(0, 0, 255, 255)
+      --love.graphics.setColor(255, 255, 255, 255)
     end
-    love.graphics.circle('fill', self.pos.x, self.pos.y, self.size, 6)
+    love.graphics.draw(self.image, self.pos.x, self.pos.y, 0, 1, 1, math.round(self.image:getWidth()/2)+1, math.round(self.image:getHeight()/2))
+    
   end
   love.graphics.pop()
   
@@ -134,7 +136,7 @@ function Grenade:explosive()
 end
 
 function Grenade:throw(targetX, targetY)
-  local force = 30
+  local force = 90
   local angle = math.angle(self.pos.x, self.pos.y, targetX, targetY)
   local dx = force * math.cos(angle)
   local dy = force * math.sin(angle)
