@@ -4,8 +4,8 @@ local anim8 = require "anim8.anim8"
 Player = GameObject:extend("Player", 
   {playerName = "New Player",
    pos = {x = 50, y = 50},
-   size = 10,
-   speed = 640,
+   size = 16,
+   speed = 1400,
    alive = true,
    hp = 100,
    forceDraw = true,
@@ -85,7 +85,7 @@ end
 function Player:debugDraw()
   self.super.debugDraw(self)
   love.graphics.setColor(100, 100, 255, 255)
-  love.graphics.circle('fill', self.pos.x, self.pos.y, self.size)
+  love.graphics.circle('line', self.pos.x, self.pos.y, self.size)
 end
 
 function Player:handleInput(dt)
@@ -159,7 +159,7 @@ function Player:update(dt)
     self.status = "stand"
   end
   
-  local fps = math.modf(speed/25)
+  local fps = math.modf(speed/20)
 
   if love.timer.getTime() - self.timer > 1/fps then
     self.timer = love.timer.getTime()
