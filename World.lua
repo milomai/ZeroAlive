@@ -89,7 +89,7 @@ function World:initLight()
 end
 
 function World:loadMap(mapPath)
-  self.map = Map:new('res/map/stage2', self.physics, self.light)
+  self.map = Map:new(mapPath, self.physics, self.light)
   width, height = self.map:size()
   self.size.width = width
   self.size.height = height

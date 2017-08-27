@@ -44,10 +44,11 @@ function love.load(arg)
   end
   love.graphics.setPointSize(2)
   world = World:create()
-  world:init({mapPath = 'res/map/stage2'})
   if Railgun.Config.debug then
     world.debug = {}
   end
+  world:init({mapPath = 'res/map/stage2'})
+  
   
 end
 
