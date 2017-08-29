@@ -8,6 +8,9 @@ Gun = class("Gun", {
     reloadTime = 3,
     muzzleVelocity = 14,       -- 子弹初速
     fireTime = 0,             -- 记录上次开火的时间
+    offset = {
+      x = -8, 
+      y = 2,},
   })
 
 -- owner 必须是 GameObject
@@ -19,7 +22,7 @@ function Gun:init(owner)
   --开火效果
   local image = love.graphics.newImage('res/img/circle.png')
   self.ps = getPS('res/particle/Fire', image)
-  
+  self.image = love.graphics.newImage('res/img/gun.png')
   self.ammo = self.maxAmmo
   self.remainReloadTime = 0
 end
@@ -71,6 +74,7 @@ function Gun:update(dt)
 end
 
 function Gun:draw()
+  love.graphics.draw(self.image, self.owner.pos.x+self.offset.x, self.owner.pos.y+self.offset.y)
   if self.isFire and self.ps and self.auto then
     love.graphics.draw(self.ps, self.owner.pos.x, self.owner.pos.y)
   end
