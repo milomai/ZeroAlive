@@ -1,6 +1,6 @@
 Bullet = GameObject:extend("Bullet", {size = 2, linearDamping = 1, hit = 0})
 
-local trackImage = gradient({{255,255,255,255},{255,255,255,0}})
+local trackImage = gradient({{240,240,180,255},{255,255,255,0}})
 
 local id = 1
 
