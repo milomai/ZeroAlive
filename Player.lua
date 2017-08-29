@@ -80,6 +80,12 @@ function Player:draw()
   if self.weapon then
     self.weapon:draw()
   end
+  
+  -- 绘制阴影
+  love.graphics.push("all")
+  love.graphics.setColor(0,0,0, 100)
+  love.graphics.ellipse("fill", self.pos.x, self.pos.y + self.size, 10, 2)
+  love.graphics.pop()
 end
 
 function Player:debugDraw()
